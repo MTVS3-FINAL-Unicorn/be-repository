@@ -1,9 +1,11 @@
 package com.ohgiraffers.bridge.ad.entity;
 
+import com.ohgiraffers.bridge.BaseTimeEntity;
 import jakarta.persistence.*;
 
 @Entity
-public class Ad {
+public class Ad extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adId;
@@ -25,13 +27,11 @@ public class Ad {
 
     public Ad() {}
 
-    public Ad(Long adId, Long corpId, String mediaUrl, String type, String description, int isOpened) {
-        this.adId = adId;
+    public Ad(Long corpId, String mediaUrl, String type, String description) {
         this.corpId = corpId;
         this.mediaUrl = mediaUrl;
         this.type = type;
         this.description = description;
-        this.isOpened = isOpened;
     }
 
     public Long getAdId() {
