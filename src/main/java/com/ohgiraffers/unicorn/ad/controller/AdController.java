@@ -1,7 +1,7 @@
-package com.ohgiraffers.bridge.ad.controller;
+package com.ohgiraffers.unicorn.ad.controller;
 
-import com.ohgiraffers.bridge.ad.entity.Ad;
-import com.ohgiraffers.bridge.ad.service.AdService;
+import com.ohgiraffers.unicorn.ad.entity.Ad;
+import com.ohgiraffers.unicorn.ad.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

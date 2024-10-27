@@ -1,6 +1,6 @@
-package com.ohgiraffers.bridge.ad.entity;
+package com.ohgiraffers.unicorn.ad.entity;
 
-import com.ohgiraffers.bridge.BaseTimeEntity;
+import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
 
 @Entity
