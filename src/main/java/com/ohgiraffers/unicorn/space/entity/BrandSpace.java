@@ -14,6 +14,9 @@ public class BrandSpace {
     private List<Item> items;
     private int bgm;
     private Light lighting;
+    private List<Qna> qna;
+
+    public BrandSpace() {}
 
     public BrandSpace(Long corpId, List<Item> items, int bgm, Light lighting) {
         this.corpId = corpId;
@@ -58,6 +61,14 @@ public class BrandSpace {
         this.lighting = lighting;
     }
 
+    public List<Qna> getQna() {
+        return qna;
+    }
+
+    public void setQna(List<Qna> qna) {
+        this.qna = qna;
+    }
+
     @Override
     public String toString() {
         return "BrandSpace{" +
@@ -66,6 +77,7 @@ public class BrandSpace {
                 ", items=" + items +
                 ", bgm=" + bgm +
                 ", lighting=" + lighting +
+                ", qna=" + qna +
                 '}';
     }
 
@@ -165,4 +177,34 @@ public class BrandSpace {
                     '}';
         }
     }
+
+    public static class Qna {
+        private String question;
+        private String answer;
+
+        public String getQuestion() {
+            return question;
+        }
+
+        public void setQuestion(String question) {
+            this.question = question;
+        }
+
+        public String getAnswer() {
+            return answer;
+        }
+
+        public void setAnswer(String answer) {
+            this.answer = answer;
+        }
+
+        @Override
+        public String toString() {
+            return "Qna{" +
+                    "question='" + question + '\'' +
+                    ", answer='" + answer + '\'' +
+                    '}';
+        }
+    }
+
 }

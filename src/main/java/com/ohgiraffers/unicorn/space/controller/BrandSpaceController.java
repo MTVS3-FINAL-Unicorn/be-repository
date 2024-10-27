@@ -35,4 +35,11 @@ public class BrandSpaceController {
             @RequestBody BrandSpace.Light lighting) {
         return ResponseEntity.ok(brandSpaceService.updateLighting(corpId, lighting));
     }
+
+    @PostMapping("/{corpId}/qna")
+    public ResponseEntity<BrandSpace> saveOrUpdateQna(
+            @PathVariable Long corpId,
+            @RequestBody List<BrandSpace.Qna> qnaList) {
+        return ResponseEntity.ok(brandSpaceService.saveOrUpdateQna(corpId, qnaList));
+    }
 }
