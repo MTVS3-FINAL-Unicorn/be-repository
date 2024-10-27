@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class BridgeApplication {
+public class UnicornApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BridgeApplication.class, args);
+        SpringApplication.run(com.ohgiraffers.bridge.UnicornApplication.class, args);
     }
 
 }
