@@ -4,6 +4,11 @@ spring:
     url: jdbc:mysql://223.130.152.102/bridge_db
     username: user
     password: 1234
+
+  data:
+    mongodb:
+      uri: mongodb://user:1234@localhost:27017/brand_space_db
+
   jpa:
     show-sql: true
     database: mysql
@@ -17,7 +22,7 @@ server:
   port: 319
 
 file:
-  upload-dir: /Users/admin/git/be-repository/Bridge/uploads
+  upload-dir: /Users/admin/git/be-repository/Unicorn/uploads
 
   servlet:
     multipart:
