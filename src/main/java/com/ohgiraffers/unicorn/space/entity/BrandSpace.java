@@ -12,10 +12,12 @@ public class BrandSpace {
     private String id;
     private Long corpId;
     private List<Item> items;
+    private int bgm;
 
-    public BrandSpace(Long corpId, List<Item> items) {
+    public BrandSpace(Long corpId, List<Item> items, int bgm) {
         this.corpId = corpId;
         this.items = items;
+        this.bgm = bgm;
     }
 
     public String getId() {
@@ -38,12 +40,21 @@ public class BrandSpace {
         this.items = items;
     }
 
+    public int getBgm() {
+        return bgm;
+    }
+
+    public void setBgm(int bgm) {
+        this.bgm = bgm;
+    }
+
     @Override
     public String toString() {
         return "BrandSpace{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", corpId=" + corpId +
                 ", items=" + items +
+                ", bgm=" + bgm +
                 '}';
     }
 

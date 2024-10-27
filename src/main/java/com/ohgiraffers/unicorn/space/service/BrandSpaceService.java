@@ -15,8 +15,15 @@ public class BrandSpaceService {
 
     public BrandSpace saveOrUpdateItems(Long corpId, List<BrandSpace.Item> items) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
-                .orElse(new BrandSpace(corpId, items));
+                .orElse(new BrandSpace(corpId, items, 0));
         brandSpace.setItems(items);
+        return brandSpaceRepository.save(brandSpace);
+    }
+
+    public BrandSpace updateBgm(Long corpId, int bgm) {
+        BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
+                .orElseThrow(() -> new RuntimeException("브랜드관 정보를 찾을 수 없습니다."));
+        brandSpace.setBgm(bgm);
         return brandSpaceRepository.save(brandSpace);
     }
 }

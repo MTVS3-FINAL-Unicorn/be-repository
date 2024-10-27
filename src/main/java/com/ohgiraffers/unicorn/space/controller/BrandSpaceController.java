@@ -21,4 +21,11 @@ public class BrandSpaceController {
             @RequestBody List<BrandSpace.Item> items) {
         return ResponseEntity.ok(brandSpaceService.saveOrUpdateItems(corpId, items));
     }
+
+    @PutMapping("/{corpId}/bgm")
+    public ResponseEntity<BrandSpace> updateBgm(
+            @PathVariable Long corpId,
+            @RequestBody int bgm) {
+        return ResponseEntity.ok(brandSpaceService.updateBgm(corpId, bgm));
+    }
 }
