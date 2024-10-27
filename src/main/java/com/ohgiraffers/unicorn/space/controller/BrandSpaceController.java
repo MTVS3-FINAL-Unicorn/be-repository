@@ -28,4 +28,11 @@ public class BrandSpaceController {
             @RequestBody int bgm) {
         return ResponseEntity.ok(brandSpaceService.updateBgm(corpId, bgm));
     }
+
+    @PutMapping("/{corpId}/lighting")
+    public ResponseEntity<BrandSpace> updateLighting(
+            @PathVariable Long corpId,
+            @RequestBody BrandSpace.Light lighting) {
+        return ResponseEntity.ok(brandSpaceService.updateLighting(corpId, lighting));
+    }
 }

@@ -13,11 +13,13 @@ public class BrandSpace {
     private Long corpId;
     private List<Item> items;
     private int bgm;
+    private Light lighting;
 
-    public BrandSpace(Long corpId, List<Item> items, int bgm) {
+    public BrandSpace(Long corpId, List<Item> items, int bgm, Light lighting) {
         this.corpId = corpId;
         this.items = items;
         this.bgm = bgm;
+        this.lighting = lighting;
     }
 
     public String getId() {
@@ -48,6 +50,14 @@ public class BrandSpace {
         this.bgm = bgm;
     }
 
+    public Light getLighting() {
+        return lighting;
+    }
+
+    public void setLighting(Light lighting) {
+        this.lighting = lighting;
+    }
+
     @Override
     public String toString() {
         return "BrandSpace{" +
@@ -55,6 +65,7 @@ public class BrandSpace {
                 ", corpId=" + corpId +
                 ", items=" + items +
                 ", bgm=" + bgm +
+                ", lighting=" + lighting +
                 '}';
     }
 
@@ -122,6 +133,35 @@ public class BrandSpace {
             return "Item{" +
                     "itemId=" + itemId +
                     ", transform=" + transform +
+                    '}';
+        }
+    }
+
+    public static class Light {
+        private String color;
+        private double intensity;
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public double getIntensity() {
+            return intensity;
+        }
+
+        public void setIntensity(double intensity) {
+            this.intensity = intensity;
+        }
+
+        @Override
+        public String toString() {
+            return "Light{" +
+                    "color='" + color + '\'' +
+                    ", intensity=" + intensity +
                     '}';
         }
     }
