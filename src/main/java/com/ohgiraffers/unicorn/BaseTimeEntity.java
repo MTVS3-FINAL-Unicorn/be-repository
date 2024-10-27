@@ -1,4 +1,4 @@
-package com.ohgiraffers.bridge;
+package com.ohgiraffers.unicorn;
 
 import jakarta.persistence.*;
 import lombok.Getter;

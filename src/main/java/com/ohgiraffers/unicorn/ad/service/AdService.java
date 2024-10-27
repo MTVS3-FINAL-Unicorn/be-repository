@@ -1,7 +1,7 @@
-package com.ohgiraffers.bridge.ad.service;
+package com.ohgiraffers.unicorn.ad.service;
 
-import com.ohgiraffers.bridge.ad.entity.Ad;
-import com.ohgiraffers.bridge.ad.repository.AdRepository;
+import com.ohgiraffers.unicorn.ad.entity.Ad;
+import com.ohgiraffers.unicorn.ad.repository.AdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

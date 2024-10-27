@@ -1,6 +1,6 @@
-package com.ohgiraffers.bridge.ad.repository;
+package com.ohgiraffers.unicorn.ad.repository;
 
-import com.ohgiraffers.bridge.ad.entity.Ad;
+import com.ohgiraffers.unicorn.ad.entity.Ad;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdRepository extends JpaRepository<Ad, Long> {
