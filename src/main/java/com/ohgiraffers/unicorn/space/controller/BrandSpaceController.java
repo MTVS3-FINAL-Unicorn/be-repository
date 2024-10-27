@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/place")
 public class BrandSpaceController {
@@ -14,11 +16,9 @@ public class BrandSpaceController {
     private BrandSpaceService brandSpaceService;
 
     @PostMapping("/{corpId}/items")
-    public ResponseEntity<BrandSpace> saveOrUpdateBrandSpaceItems(
+    public ResponseEntity<BrandSpace> saveOrUpdateItems(
             @PathVariable Long corpId,
-            @RequestBody BrandSpace brandSpaceItem) {
-
-        BrandSpace savedItem = brandSpaceService.saveOrUpdateItems(corpId, brandSpaceItem);
-        return ResponseEntity.ok(savedItem);
+            @RequestBody List<BrandSpace.Item> items) {
+        return ResponseEntity.ok(brandSpaceService.saveOrUpdateItems(corpId, items));
     }
 }
