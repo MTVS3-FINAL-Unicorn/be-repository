@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/place/{corpId}")
+@RequestMapping("/api/v1/space/{corpId}")
 public class BrandSpaceController {
 
     @Autowired
