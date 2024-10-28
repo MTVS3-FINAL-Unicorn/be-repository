@@ -21,7 +21,7 @@ public class BrandSpaceService {
 
     public BrandSpace saveOrUpdateItems(Long corpId, List<BrandSpace.Item> items) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
-                .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light()));
+                .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light(), List.of()));
         brandSpace.setItems(items);
         return brandSpaceRepository.save(brandSpace);
     }
