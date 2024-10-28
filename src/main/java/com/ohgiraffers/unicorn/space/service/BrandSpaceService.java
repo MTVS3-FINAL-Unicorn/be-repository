@@ -13,6 +13,12 @@ public class BrandSpaceService {
     @Autowired
     private BrandSpaceRepository brandSpaceRepository;
 
+    public BrandSpace getBrandSpaceByCorpId(Long corpId) {
+
+        return brandSpaceRepository.findByCorpId(corpId)
+                .orElseThrow(() -> new RuntimeException("BrandSpace not found"));
+    }
+
     public BrandSpace saveOrUpdateItems(Long corpId, List<BrandSpace.Item> items) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
                 .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light()));

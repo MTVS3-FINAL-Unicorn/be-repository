@@ -9,34 +9,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/place")
+@RequestMapping("/api/v1/place/{corpId}")
 public class BrandSpaceController {
 
     @Autowired
     private BrandSpaceService brandSpaceService;
 
-    @PostMapping("/{corpId}/items")
+    @GetMapping
+    public ResponseEntity<BrandSpace> getBrandSpace(@PathVariable Long corpId) {
+        return ResponseEntity.ok(brandSpaceService.getBrandSpaceByCorpId(corpId));
+    }
+
+    @PostMapping("/items")
     public ResponseEntity<BrandSpace> saveOrUpdateItems(
             @PathVariable Long corpId,
             @RequestBody List<BrandSpace.Item> items) {
         return ResponseEntity.ok(brandSpaceService.saveOrUpdateItems(corpId, items));
     }
 
-    @PutMapping("/{corpId}/bgm")
+    @PutMapping("/bgm")
     public ResponseEntity<BrandSpace> updateBgm(
             @PathVariable Long corpId,
             @RequestBody int bgm) {
         return ResponseEntity.ok(brandSpaceService.updateBgm(corpId, bgm));
     }
 
-    @PutMapping("/{corpId}/lighting")
+    @PutMapping("/lighting")
     public ResponseEntity<BrandSpace> updateLighting(
             @PathVariable Long corpId,
             @RequestBody BrandSpace.Light lighting) {
         return ResponseEntity.ok(brandSpaceService.updateLighting(corpId, lighting));
     }
 
-    @PostMapping("/{corpId}/qna")
+    @PostMapping("/qna")
     public ResponseEntity<BrandSpace> saveOrUpdateQna(
             @PathVariable Long corpId,
             @RequestBody List<BrandSpace.Qna> qnaList) {
