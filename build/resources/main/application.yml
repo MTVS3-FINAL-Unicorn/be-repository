@@ -7,7 +7,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://user:1234@localhost:27017/brand_space_db
+      uri: mongodb://user:1234@223.130.152.102:27017/brand_space_db
 
   jpa:
     show-sql: true
@@ -22,7 +22,7 @@ server:
   port: 319
 
 file:
-  upload-dir: /Users/admin/git/be-repository/Unicorn/uploads
+  upload-dir: C:\Users\Admin\be-repository\uploads
 
   servlet:
     multipart:
