@@ -44,5 +44,12 @@ public class Meeting {
     private String extraConditions;
 
     private Long corpId;
-}
 
+    private boolean hasDeleted = false;
+    private boolean isExpired = false;
+
+    public void updateExpirationStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        this.isExpired = recruitmentPeriodEnd != null && recruitmentPeriodEnd.isBefore(now);
+    }
+}

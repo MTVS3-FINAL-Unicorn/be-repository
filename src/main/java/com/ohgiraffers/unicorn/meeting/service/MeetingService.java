@@ -17,6 +17,15 @@ public class MeetingService {
     @Autowired
     private MeetingRepository meetingRepository;
 
+    public List<Meeting> getAllMeetings() {
+        return meetingRepository.findAll();
+    }
+
+    public Meeting getMeetingById(Long meetingId) {
+        return meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
+    }
+
     public Meeting createMeeting(MeetingDTO meetingDTO) {
         Meeting meeting = new Meeting();
 
@@ -61,13 +70,46 @@ public class MeetingService {
         return meetingRepository.save(meeting);
     }
 
-    public List<Meeting> getAllMeetings() {
-        return meetingRepository.findAll();
-    }
+    public Meeting updateMeeting(Long meetingId, MeetingDTO meetingDTO) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
-    public Meeting getMeetingById(Long meetingId) {
-        return meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
+        // 필드 업데이트
+        meeting.setMeetingTitle(meetingDTO.getMeetingTitle());
+        meeting.setParticipantGender(meetingDTO.getParticipantGender());
+        meeting.setRewardType(meetingDTO.getRewardType());
+        meeting.setExtraConditions(meetingDTO.getExtraConditions());
+
+        // 연령대 범위 설정
+        if (meetingDTO.getParticipantAge() != null) {
+            String[] ageRange = meetingDTO.getParticipantAge().split(" - ");
+            meeting.setParticipantAgeStart(Integer.parseInt(ageRange[0]));
+            meeting.setParticipantAgeEnd(Integer.parseInt(ageRange[1]));
+        }
+
+        // 보상 금액 설정
+        if (meetingDTO.getRewardPrice() != null && !meetingDTO.getRewardPrice().isEmpty()) {
+            meeting.setRewardPrice(Long.parseLong(meetingDTO.getRewardPrice()));
+        }
+
+        // 좌담회 날짜 및 시간 범위 설정
+        if (meetingDTO.getMeetingDate() != null) {
+            meeting.setMeetingDate(LocalDate.parse(meetingDTO.getMeetingDate()));
+        }
+        if (meetingDTO.getMeetingTime() != null) {
+            String[] timeRange = meetingDTO.getMeetingTime().split(" - ");
+            meeting.setMeetingTimeStart(LocalTime.parse(timeRange[0]));
+            meeting.setMeetingTimeEnd(LocalTime.parse(timeRange[1]));
+        }
+
+        // 모집 기간 범위 설정
+        if (meetingDTO.getRecruitmentPeriod() != null) {
+            String[] periodRange = meetingDTO.getRecruitmentPeriod().split(" - ");
+            meeting.setRecruitmentPeriodStart(LocalDateTime.parse(periodRange[0]));
+            meeting.setRecruitmentPeriodEnd(LocalDateTime.parse(periodRange[1]));
+        }
+
+        return meetingRepository.save(meeting);
     }
 }
 

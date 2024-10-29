@@ -34,5 +34,11 @@ public class MeetingController {
         Meeting createdMeeting = meetingService.createMeeting(meeting);
         return ResponseEntity.status(201).body(createdMeeting);
     }
+
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<Meeting> updateMeeting(@PathVariable Long meetingId, @RequestBody MeetingDTO meetingDTO) {
+        Meeting updatedMeeting = meetingService.updateMeeting(meetingId, meetingDTO);
+        return ResponseEntity.ok(updatedMeeting);
+    }
 }
 
