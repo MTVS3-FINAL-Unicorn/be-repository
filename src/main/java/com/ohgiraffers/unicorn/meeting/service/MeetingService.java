@@ -111,5 +111,12 @@ public class MeetingService {
 
         return meetingRepository.save(meeting);
     }
+
+    public void softDeleteMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+        meeting.setHasDeleted(true);
+        meetingRepository.save(meeting);
+    }
 }
 

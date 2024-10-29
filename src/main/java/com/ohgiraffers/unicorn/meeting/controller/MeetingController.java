@@ -40,5 +40,11 @@ public class MeetingController {
         Meeting updatedMeeting = meetingService.updateMeeting(meetingId, meetingDTO);
         return ResponseEntity.ok(updatedMeeting);
     }
+
+    @DeleteMapping("/{meetingId}")
+    public ResponseEntity<Void> softDeleteMeeting(@PathVariable Long meetingId) {
+        meetingService.softDeleteMeeting(meetingId);
+        return ResponseEntity.noContent().build();
+    }
 }
 
