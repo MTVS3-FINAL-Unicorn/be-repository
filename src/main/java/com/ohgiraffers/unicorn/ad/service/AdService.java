@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class AdService {
 
-    private final String uploadDir = "/Users/admin/git/be-repository/Bridge/uploads";
+    private final String uploadDir = "/Users/admin/git/be-repository/Unicorn/uploads";
     private final Logger logger = LoggerFactory.getLogger(AdService.class);
 
     @Autowired

@@ -22,7 +22,7 @@ server:
   port: 319
 
 file:
-  upload-dir: C:\Users\Admin\be-repository\uploads
+  upload-dir: /Users/admin/git/be-repository/Unicorn/uploads
 
   servlet:
     multipart:
