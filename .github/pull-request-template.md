@@ -1,12 +1,3 @@
----
-name: PULL REQUEST TEMPLATE
-about: Pull Request 시 작성해주세요.
-title: ''
-labels: ''
-assignees: lxxsxynnn
-
----
-
 ## ⭐Key Changes
 > 핵심 변경 사항에 대해서 적어주세요.
 1. 변경 사항 1
