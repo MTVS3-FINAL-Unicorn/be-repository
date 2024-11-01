@@ -6,6 +6,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 application.properties
+/Unicorn/uploads
+/Bridge/uploads
 
 ### STS ###
 .apt_generated
