@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://223.130.152.102/bridge_db
-    username: user
-    password: 1234
+    url: '${{ DATABASE_URL }}'
+    username: '${{ DATABASE_USERNAME }}'
+    password: '${{ DATABASE_PASSWORD }}'
 
   data:
     mongodb:
@@ -20,9 +20,6 @@ spring:
 
 server:
   port: 319
-
-file:
-  upload-dir: /Users/admin/git/be-repository/Unicorn/uploads
 
   servlet:
     multipart:
