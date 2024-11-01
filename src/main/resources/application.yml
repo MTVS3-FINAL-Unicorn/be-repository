@@ -39,8 +39,10 @@ cloud:
   aws:
     s3:
       bucket: bucat
-    stack.auto: false
-    region.static: ap-northeast-2
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
     credentials:
-      accessKey:
-      secretKey:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}

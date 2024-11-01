@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn;
+package com.ohgiraffers.unicorn.config;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
