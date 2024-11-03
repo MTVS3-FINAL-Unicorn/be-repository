@@ -19,6 +19,22 @@ public class BrandSpaceService {
                 .orElseThrow(() -> new RuntimeException("BrandSpace not found"));
     }
 
+    public List<BrandSpace.Qna> getQuestionList(Long corpId) {
+        BrandSpace brandSpace = getBrandSpaceByCorpId(corpId);
+
+        return brandSpace.getQna();
+    }
+
+    public String getAnswerByQuestion(Long corpId, String question) {
+        BrandSpace brandSpace = getBrandSpaceByCorpId(corpId);
+
+        return brandSpace.getQna().stream()
+                .filter(qna -> qna.getQuestion().equalsIgnoreCase(question))
+                .map(BrandSpace.Qna::getAnswer)
+                .findFirst()
+                .orElse("No answer found for the given question");
+    }
+
     public BrandSpace saveOrUpdateItems(Long corpId, List<BrandSpace.Item> items) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
                 .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light(), List.of()));

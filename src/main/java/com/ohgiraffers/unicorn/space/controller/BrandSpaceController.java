@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/space/{corpId}")
@@ -19,6 +20,23 @@ public class BrandSpaceController {
     public ResponseEntity<BrandSpace> getBrandSpace(@PathVariable Long corpId) {
         return ResponseEntity.ok(brandSpaceService.getBrandSpaceByCorpId(corpId));
     }
+
+    @GetMapping("/questions")
+    public ResponseEntity<List<BrandSpace.Qna>> getQuestionList(
+            @PathVariable Long corpId) {
+        List<BrandSpace.Qna> answer = brandSpaceService.getQuestionList(corpId);
+        return ResponseEntity.ok(answer);
+    }
+
+    @PostMapping("/answer")
+    public ResponseEntity<String> getQnaAnswer(
+            @PathVariable Long corpId,
+            @RequestBody Map<String, String> requestBody) {
+        String question = requestBody.get("question");
+        String answer = brandSpaceService.getAnswerByQuestion(corpId, question);
+        return ResponseEntity.ok(answer);
+    }
+
 
     @PostMapping("/items")
     public ResponseEntity<BrandSpace> saveOrUpdateItems(
@@ -48,3 +66,4 @@ public class BrandSpaceController {
         return ResponseEntity.ok(brandSpaceService.saveOrUpdateQna(corpId, qnaList));
     }
 }
+
