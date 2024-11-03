@@ -23,7 +23,7 @@ public class CustomUserDetail implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("%s은(는) 없는 이메일 입니다. 다시 확인해주세요.", email)));
     }
 
-    public UserDetails createUserDetails(com.ohgiraffers.unicorn.user.domain.User u) {
+    public UserDetails createUserDetails(com.ohgiraffers.unicorn.user.entity.User u) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(u.getAuthority().toString());
 
         return User.builder()

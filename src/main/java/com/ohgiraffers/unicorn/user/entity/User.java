@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.user.domain;
+package com.ohgiraffers.unicorn.user.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;

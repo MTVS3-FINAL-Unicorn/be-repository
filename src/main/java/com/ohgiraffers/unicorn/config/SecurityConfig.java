@@ -28,8 +28,7 @@ public class SecurityConfig {
     private final JWTTokenProvider jwtTokenProvider;
 
     private static final String[] WHITE_LIST = {
-            "/api/**",
-            "/h2-console/**"  // h2-console 경로 추가
+            "/api/v1/auth/**"
     };
 
     @Bean
