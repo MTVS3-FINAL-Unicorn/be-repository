@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.user.entity;
+package com.ohgiraffers.unicorn.auth.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity {
+public class Corp extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,25 +24,17 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private int age;
-
-    @Column(nullable = false)
-    private String gender;
+    private String brandName;
 
     @Enumerated(value = EnumType.STRING)
-    @ColumnDefault("'USER'")
+    @ColumnDefault("'CORP'")
     private Authority authority;
 
     @Builder
-    public User(String email, String password, String name, int age, String gender, Authority authority) {
+    public Corp(String email, String password, String brandName, Authority authority) {
         this.email = email;
         this.password = password;
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
+        this.brandName = brandName;
         this.authority = authority;
     }
 
