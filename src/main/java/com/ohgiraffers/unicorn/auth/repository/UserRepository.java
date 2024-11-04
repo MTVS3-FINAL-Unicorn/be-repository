@@ -1,6 +1,6 @@
-package com.ohgiraffers.unicorn.user.repository;
+package com.ohgiraffers.unicorn.auth.repository;
 
-import com.ohgiraffers.unicorn.user.entity.User;
+import com.ohgiraffers.unicorn.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
