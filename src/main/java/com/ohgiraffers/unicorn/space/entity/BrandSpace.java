@@ -3,6 +3,7 @@ package com.ohgiraffers.unicorn.space.entity;
 import jakarta.persistence.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "brand_space")
@@ -15,14 +16,16 @@ public class BrandSpace {
     private int bgm;
     private Light lighting;
     private List<Qna> qna;
+    private List<Papering> papering;
 
     public BrandSpace() {}
 
-    public BrandSpace(Long corpId, List<Item> items, int bgm, Light lighting, List<Qna> qna) {
+    public BrandSpace(Long corpId, List<Item> items, int bgm, Light lighting, List<Papering> papering, List<Qna> qna) {
         this.corpId = corpId;
         this.items = items;
         this.bgm = bgm;
         this.lighting = lighting;
+        this.papering = papering;
         this.qna = qna;
     }
 
@@ -79,6 +82,15 @@ public class BrandSpace {
         this.qna = qna;
     }
 
+    public List<Papering> getPapering() {
+        return papering;
+    }
+
+    public void setPapering(List<Papering> papering) {
+        this.papering = papering;
+    }
+
+
     @Override
     public String toString() {
         return "BrandSpace{" +
@@ -87,6 +99,7 @@ public class BrandSpace {
                 ", items=" + items +
                 ", bgm=" + bgm +
                 ", lighting=" + lighting +
+                ", papering=" + papering +
                 ", qna=" + qna +
                 '}';
     }
@@ -347,6 +360,42 @@ public class BrandSpace {
             return "Light{" +
                     "color='" + color + '\'' +
                     ", intensity=" + intensity +
+                    '}';
+        }
+    }
+
+    public static class Papering {
+        private int index;
+        private int materialId;
+
+        public Papering() {};
+
+        public Papering(int index, int materialId) {
+            this.index = index;
+            this.materialId = materialId;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public int getMaterialId() {
+            return materialId;
+        }
+
+        public void setMaterialId(int materialId) {
+            this.materialId = materialId;
+        }
+
+        @Override
+        public String toString() {
+            return "Papering{" +
+                    "index=" + index +
+                    ", materialId=" + materialId +
                     '}';
         }
     }

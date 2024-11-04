@@ -37,7 +37,7 @@ public class BrandSpaceService {
 
     public BrandSpace saveOrUpdateItems(Long corpId, List<BrandSpace.Item> items) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
-                .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light(), List.of()));
+                .orElse(new BrandSpace(corpId, items, 0, new BrandSpace.Light(), List.of(), List.of()));
         brandSpace.setItems(items);
         return brandSpaceRepository.save(brandSpace);
     }
@@ -51,8 +51,15 @@ public class BrandSpaceService {
 
     public BrandSpace updateLighting(Long corpId, BrandSpace.Light lighting) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
-                .orElseThrow(() -> new RuntimeException("BrandSpace not found"));
+                .orElseThrow(() -> new RuntimeException("브랜드관 정보를 찾을 수 없습니다."));
         brandSpace.setLighting(lighting);
+        return brandSpaceRepository.save(brandSpace);
+    }
+
+    public BrandSpace updatePapering(Long corpId, List<BrandSpace.Papering> papering) {
+        BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
+                .orElseGet(() -> new BrandSpace(corpId, new BrandSpace().getItems(), 0, new BrandSpace.Light(), List.of(), List.of()));
+        brandSpace.setPapering(papering);
         return brandSpaceRepository.save(brandSpace);
     }
 
