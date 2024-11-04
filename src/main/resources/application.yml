@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://223.130.152.102/bridge_db
+    url: jdbc:mysql://223.130.152.102:3306/bridge_db
     username: user
     password: 1234
 
@@ -20,9 +20,6 @@ spring:
 
 server:
   port: 319
-
-file:
-  upload-dir: /Users/admin/git/be-repository/Unicorn/uploads
 
   servlet:
     multipart:
@@ -46,3 +43,6 @@ cloud:
     credentials:
       access-key: ${ACCESS_KEY}
       secret-key: ${SECRET_KEY}
+
+jwt:
+  secret: ${JWT_SECRET}
