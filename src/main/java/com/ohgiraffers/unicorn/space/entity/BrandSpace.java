@@ -26,6 +26,11 @@ public class BrandSpace {
         this.qna = qna;
     }
 
+    public BrandSpace(Long corpId, List<Qna> qna) {
+        this.corpId = corpId;
+        this.qna = qna;
+    }
+
     public String getId() {
         return id;
     }
