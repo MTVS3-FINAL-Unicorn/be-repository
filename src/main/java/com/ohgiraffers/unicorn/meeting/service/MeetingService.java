@@ -3,8 +3,6 @@ package com.ohgiraffers.unicorn.meeting.service;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
