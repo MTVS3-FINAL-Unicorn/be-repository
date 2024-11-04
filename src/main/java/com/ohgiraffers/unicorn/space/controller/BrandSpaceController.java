@@ -1,5 +1,6 @@
 package com.ohgiraffers.unicorn.space.controller;
 
+import com.ohgiraffers.unicorn.space.dto.PaperingWrapper;
 import com.ohgiraffers.unicorn.space.entity.BrandSpace;
 import com.ohgiraffers.unicorn.space.service.BrandSpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,13 @@ public class BrandSpaceController {
             @PathVariable Long corpId,
             @RequestBody BrandSpace.Light lighting) {
         return ResponseEntity.ok(brandSpaceService.updateLighting(corpId, lighting));
+    }
+
+    @PutMapping("/papering")
+    public ResponseEntity<BrandSpace> updatePapering(
+            @PathVariable Long corpId,
+            @RequestBody PaperingWrapper paperingWrapper) {
+        return ResponseEntity.ok(brandSpaceService.updatePapering(corpId, paperingWrapper.getPapering()));
     }
 
     @PostMapping("/qna")
