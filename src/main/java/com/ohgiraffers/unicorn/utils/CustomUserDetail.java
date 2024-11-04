@@ -1,6 +1,6 @@
 package com.ohgiraffers.unicorn.utils;
 
-import com.ohgiraffers.unicorn.user.repository.UserRepository;
+import com.ohgiraffers.unicorn.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +23,7 @@ public class CustomUserDetail implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("%s은(는) 없는 이메일 입니다. 다시 확인해주세요.", email)));
     }
 
-    public UserDetails createUserDetails(com.ohgiraffers.unicorn.user.entity.User u) {
+    public UserDetails createUserDetails(com.ohgiraffers.unicorn.auth.entity.User u) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(u.getAuthority().toString());
 
         return User.builder()

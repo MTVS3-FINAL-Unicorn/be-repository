@@ -1,6 +1,6 @@
 package com.ohgiraffers.unicorn.jwt;
 
-import com.ohgiraffers.unicorn.user.dto.UserResponseDTO;
+import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
