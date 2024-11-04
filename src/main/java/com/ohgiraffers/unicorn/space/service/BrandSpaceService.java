@@ -58,7 +58,7 @@ public class BrandSpaceService {
 
     public BrandSpace saveOrUpdateQna(Long corpId, List<BrandSpace.Qna> qnaList) {
         BrandSpace brandSpace = brandSpaceRepository.findByCorpId(corpId)
-                .orElseThrow(() -> new RuntimeException("BrandSpace not found"));
+                .orElseGet(() -> new BrandSpace(corpId, qnaList));
         brandSpace.setQna(qnaList);
         return brandSpaceRepository.save(brandSpace);
     }
