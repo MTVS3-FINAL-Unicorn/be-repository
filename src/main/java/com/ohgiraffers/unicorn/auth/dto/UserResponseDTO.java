@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.user.dto;
+package com.ohgiraffers.unicorn.auth.dto;
 
 public class UserResponseDTO {
 
