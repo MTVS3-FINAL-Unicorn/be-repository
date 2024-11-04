@@ -3,6 +3,8 @@ package com.ohgiraffers.unicorn.meeting.service;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetingService {
@@ -17,14 +20,42 @@ public class MeetingService {
     @Autowired
     private MeetingRepository meetingRepository;
 
-    public List<Meeting> getAllMeetings() {
-        return meetingRepository.findAll();
+    public MeetingService(MeetingRepository meetingRepository) {
+        this.meetingRepository = meetingRepository;
     }
 
-    public Meeting getMeetingById(Long meetingId) {
-        return meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
+    // 전체 조회 메서드
+    public List<MeetingDTO> getAllMeetings() {
+        return meetingRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
+
+    // 단일 조회 메서드
+    public MeetingDTO getMeetingById(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
+        return convertToDto(meeting);
+    }
+
+    // Meeting 엔티티를 MeetingDTO로 변환하는 메서드
+    private MeetingDTO convertToDto(Meeting meeting) {
+        MeetingDTO meetingDTO = new MeetingDTO();
+        meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
+        meetingDTO.setParticipantGender(meeting.getParticipantGender());
+        meetingDTO.setParticipantAge(
+                meeting.getParticipantAgeStart() + " - " + meeting.getParticipantAgeEnd());
+        meetingDTO.setRewardType(meeting.getRewardType());
+        meetingDTO.setRewardPrice(meeting.getRewardPrice() != null ? meeting.getRewardPrice().toString() : null);
+        meetingDTO.setMeetingDate(meeting.getMeetingDate() != null ? meeting.getMeetingDate().toString() : null);
+        meetingDTO.setMeetingTime(meeting.getMeetingTimeStart() + " - " + meeting.getMeetingTimeEnd());
+        meetingDTO.setRecruitmentPeriod(
+                meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
+        meetingDTO.setExtraConditions(meeting.getExtraConditions());
+        meetingDTO.setCorpId(meeting.getCorpId());
+        return meetingDTO;
+    }
+
 
     public Meeting createMeeting(MeetingDTO meetingDTO) {
         Meeting meeting = new Meeting();

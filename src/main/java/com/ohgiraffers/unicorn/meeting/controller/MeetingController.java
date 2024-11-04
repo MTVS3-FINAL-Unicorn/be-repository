@@ -17,14 +17,14 @@ public class MeetingController {
     private MeetingService meetingService;
 
     @GetMapping
-    public ResponseEntity<List<Meeting>> getAllMeetings() {
-        List<Meeting> meetings = meetingService.getAllMeetings();
+    public ResponseEntity<List<MeetingDTO>> getAllMeetings() {
+        List<MeetingDTO> meetings = meetingService.getAllMeetings();
         return ResponseEntity.ok(meetings);
     }
 
     @GetMapping("/{meetingId}")
-    public ResponseEntity<Meeting> getMeetingById(@PathVariable Long meetingId) {
-        Meeting meeting = meetingService.getMeetingById(meetingId);
+    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long meetingId) {
+        MeetingDTO meeting = meetingService.getMeetingById(meetingId);
         return ResponseEntity.ok(meeting);
     }
 
