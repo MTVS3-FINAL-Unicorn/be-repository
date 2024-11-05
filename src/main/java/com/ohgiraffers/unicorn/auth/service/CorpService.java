@@ -27,8 +27,7 @@ public class CorpService {
 
     /* 기업 회원 가입 */
     @Transactional
-    public void signUpCorporate(UserRequestDTO.CorporateSignUpDTO requestDTO) {
-        checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
+    public void corporateSignUp(UserRequestDTO.CorporateSignUpDTO requestDTO) {
         Corp corp = createCorporateUser(requestDTO);
         corpRepository.save(corp);
         createDefaultBrandSpaceForCorp(corp.getId());  // MongoDB에 기본 BrandSpace 엔티티 생성
@@ -46,18 +45,14 @@ public class CorpService {
         brandSpaceRepository.save(defaultBrandSpace);
     }
 
-    private void checkValidPassword(String rawPassword, String encodedPassword) {
-        log.info("{} {}", rawPassword, encodedPassword);
-        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new Exception400("비밀번호가 일치하지 않습니다.");
-        }
-    }
-
     protected Corp createCorporateUser(UserRequestDTO.CorporateSignUpDTO requestDTO) {
         return Corp.builder()
+                .brandName(requestDTO.brandName())
+                .picName(requestDTO.picName())
+                .binNo(requestDTO.binNo())
+                .contact(requestDTO.contact())
                 .email(requestDTO.email())
                 .password(passwordEncoder.encode(requestDTO.password()))
-                .brandName(requestDTO.brandName())
                 .authority(Authority.CORP)
                 .build();
     }

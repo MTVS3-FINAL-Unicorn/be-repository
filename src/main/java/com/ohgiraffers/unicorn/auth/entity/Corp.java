@@ -26,15 +26,27 @@ public class Corp extends BaseTimeEntity {
     @Column(nullable = false)
     private String brandName;
 
+    @Column(nullable = false)
+    private String picName;
+
+    @Column
+    private String binNo;
+
+    @Column(nullable = false)
+    private String contact;
+
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'CORP'")
     private Authority authority;
 
     @Builder
-    public Corp(String email, String password, String brandName, Authority authority) {
+    public Corp(String brandName, String picName, String binNo, String contact, String email, String password, Authority authority) {
+        this.brandName = brandName;
+        this.picName = picName;
+        this.binNo = binNo;
+        this.contact = contact;
         this.email = email;
         this.password = password;
-        this.brandName = brandName;
         this.authority = authority;
     }
 

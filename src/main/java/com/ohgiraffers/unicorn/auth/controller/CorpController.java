@@ -27,7 +27,7 @@ public class CorpController {
     /* 기업 회원 가입 */
     @PostMapping("/signup/corp")
     public ResponseEntity<?> signUpCorporate(@Valid @RequestBody UserRequestDTO.CorporateSignUpDTO requestDTO) {
-        corpService.signUpCorporate(requestDTO);
+        corpService.corporateSignUp(requestDTO);
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 

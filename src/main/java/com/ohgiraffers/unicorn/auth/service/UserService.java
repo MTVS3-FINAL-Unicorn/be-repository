@@ -42,7 +42,6 @@ public class UserService {
     /* 개인 회원 가입 */
     @Transactional
     public void signUpIndividual(UserRequestDTO.IndividualSignUpDTO requestDTO) {
-        checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
         User user = createIndividualUser(requestDTO);
         userRepository.save(user);
     }
@@ -50,7 +49,6 @@ public class UserService {
     /* 기업 회원 가입 */
     @Transactional
     public void signUpCorporate(UserRequestDTO.CorporateSignUpDTO requestDTO) {
-        checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
         Corp corp = createCorporateUser(requestDTO);
         corpRepository.save(corp);
         createDefaultBrandSpaceForCorp(corp.getId());  // MongoDB에 기본 BrandSpace 엔티티 생성
@@ -60,7 +58,6 @@ public class UserService {
     public UserResponseDTO.LoginSuccessDTO login(HttpServletRequest httpServletRequest, UserRequestDTO.loginDTO requestDTO) {
         User user = findMemberByEmail(requestDTO.email())
                 .orElseThrow(() -> new Exception401("해당 이메일은 회원 가입 되지 않은 이메일입니다."));
-        checkValidPassword(requestDTO.password(), user.getPassword());
         UserResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
         return new UserResponseDTO.LoginSuccessDTO(
                 authTokenDTO.grantType(),
@@ -83,13 +80,6 @@ public class UserService {
         defaultBrandSpace.setQna(List.of());
 
         brandSpaceRepository.save(defaultBrandSpace);
-    }
-
-    private void checkValidPassword(String rawPassword, String encodedPassword) {
-        log.info("{} {}", rawPassword, encodedPassword);
-        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new Exception400("비밀번호가 일치하지 않습니다.");
-        }
     }
 
     protected Optional<User> findMemberByEmail(String email) {
