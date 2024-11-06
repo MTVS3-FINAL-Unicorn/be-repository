@@ -38,7 +38,7 @@ public class JWTTokenFilter extends GenericFilterBean {
             => 토큰 재발급 요청 path인 경우 필터 패스
          */
         if(token != null && jwtTokenProvider.validateToken(token)) {
-            if(!requestURI.equals("/api/auth/reissue") && !requestURI.equals("/api/auth/logout")) {
+            if(!requestURI.equals("/api/auth/reissue") && (!requestURI.equals("/api/v1/auth/indiv/logout") || !requestURI.equals("/api/v1/auth/corp/logout"))) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
