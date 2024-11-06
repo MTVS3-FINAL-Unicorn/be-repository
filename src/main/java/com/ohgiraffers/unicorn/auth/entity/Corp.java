@@ -2,15 +2,13 @@ package com.ohgiraffers.unicorn.auth.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Corp extends BaseTimeEntity {
 
     @Id
@@ -26,15 +24,27 @@ public class Corp extends BaseTimeEntity {
     @Column(nullable = false)
     private String brandName;
 
+    @Column(nullable = false)
+    private String picName;
+
+    @Column
+    private String binNo;
+
+    @Column(nullable = false)
+    private String contact;
+
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'CORP'")
     private Authority authority;
 
     @Builder
-    public Corp(String email, String password, String brandName, Authority authority) {
+    public Corp(String brandName, String picName, String binNo, String contact, String email, String password, Authority authority) {
+        this.brandName = brandName;
+        this.picName = picName;
+        this.binNo = binNo;
+        this.contact = contact;
         this.email = email;
         this.password = password;
-        this.brandName = brandName;
         this.authority = authority;
     }
 
