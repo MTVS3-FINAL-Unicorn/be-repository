@@ -2,15 +2,13 @@ package com.ohgiraffers.unicorn.auth.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Corp extends BaseTimeEntity {
 
     @Id
