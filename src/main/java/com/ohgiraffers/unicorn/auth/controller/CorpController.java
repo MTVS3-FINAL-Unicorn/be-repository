@@ -22,7 +22,6 @@ import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 public class CorpController {
 
     private final CorpService corpService;
-    private final IndivService indivService;
 
     /* 기업 회원 가입 */
     @PostMapping("/signup")
