@@ -7,17 +7,28 @@ import jakarta.validation.constraints.Pattern;
 public class UserRequestDTO {
 
     public record IndividualSignUpDTO (
+        @NotBlank(message = "성함을 입력해 주세요.")
+        String name,
+
+        @NotBlank(message = "닉네임을 입력해 주세요.")
+        String nickname,
+
+        @NotBlank(message = "성별을 선택해 주세요.")
+        String gender,
+
+        @NotBlank
+        String birthDate,
+
+        @NotBlank
+        String contact,
+
         @Email(message = "올바른 이메일 주소를 입력해 주세요.")
         @NotBlank(message = "이메일을 입력해 주세요.")
         String email,
+
         @Pattern(regexp = "^(?=.*\\d).{6,}$", message = "패스워드는 최소 6자 이상이어야 하며, 숫자를 포함해야 합니다.")
-        String password,
-        String confirmPassword,
-        @NotBlank(message = "성함을 입력해 주세요.")
-        String name,
-        int age,
-        @NotBlank(message = "성별을 선택해 주세요.")
-        String gender
+        String password
+
     ) {}
 
     public record CorporateSignUpDTO (
