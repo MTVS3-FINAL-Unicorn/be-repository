@@ -24,7 +24,7 @@ public class Ad extends BaseTimeEntity {
     private String description;
 
     @ColumnDefault("1")
-    private int isOpened;
+    private Integer isOpened;
 
     public Ad() {}
 
@@ -75,11 +75,11 @@ public class Ad extends BaseTimeEntity {
         this.description = description;
     }
 
-    public int getIsOpened() {
+    public Integer getIsOpened() {
         return isOpened;
     }
 
-    public void setIsOpened(int isOpened) {
+    public void setIsOpened(Integer isOpened) {
         this.isOpened = isOpened;
     }
 

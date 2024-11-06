@@ -49,27 +49,9 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain corpFilterChain(HttpSecurity httpSecurity) throws Exception {
-
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/corp/**")
-                .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .formLogin(formLogin -> formLogin.disable())
-                .userDetailsService(customCorpDetail)
-                .authorizeHttpRequests((request) -> request
-                        .requestMatchers(WHITE_LIST).permitAll()
-                        .anyRequest().authenticated());
-
-        return httpSecurity.build();
-    }
-
-    @Bean
-    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/indiv/**")
+                .securityMatcher("/api/v1/auth/indiv/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
@@ -82,6 +64,24 @@ public class SecurityConfig {
                     exception.authenticationEntryPoint(authenticationEntryPoint());
                     exception.accessDeniedHandler(accessDeniedHandler());
                 });
+
+        return httpSecurity.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain corpFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher("/api/v1/auth/corp/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**")
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .formLogin(formLogin -> formLogin.disable())
+                .userDetailsService(customCorpDetail)
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .anyRequest().authenticated());
 
         return httpSecurity.build();
     }

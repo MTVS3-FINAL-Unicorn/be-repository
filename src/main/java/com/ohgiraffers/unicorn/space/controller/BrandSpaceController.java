@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+
 @RestController
 @RequestMapping("/api/v1/space/{corpId}")
 public class BrandSpaceController {
@@ -34,44 +36,39 @@ public class BrandSpaceController {
             @PathVariable Long corpId,
             @RequestBody Map<String, String> requestBody) {
         String question = requestBody.get("question");
-        String answer = brandSpaceService.getAnswerByQuestion(corpId, question);
+        String answer = brandSpaceService.getAnswerByQuestion(getCurrentUserId(), question);
         return ResponseEntity.ok(answer);
     }
 
 
     @PostMapping("/items")
     public ResponseEntity<BrandSpace> saveOrUpdateItems(
-            @PathVariable Long corpId,
             @RequestBody List<BrandSpace.Item> items) {
-        return ResponseEntity.ok(brandSpaceService.saveOrUpdateItems(corpId, items));
+        return ResponseEntity.ok(brandSpaceService.saveOrUpdateItems(getCurrentUserId(), items));
     }
 
     @PutMapping("/bgm")
     public ResponseEntity<BrandSpace> updateBgm(
-            @PathVariable Long corpId,
             @RequestBody int bgm) {
-        return ResponseEntity.ok(brandSpaceService.updateBgm(corpId, bgm));
+        return ResponseEntity.ok(brandSpaceService.updateBgm(getCurrentUserId(), bgm));
     }
 
     @PutMapping("/lighting")
     public ResponseEntity<BrandSpace> updateLighting(
-            @PathVariable Long corpId,
             @RequestBody BrandSpace.Light lighting) {
-        return ResponseEntity.ok(brandSpaceService.updateLighting(corpId, lighting));
+        return ResponseEntity.ok(brandSpaceService.updateLighting(getCurrentUserId(), lighting));
     }
 
     @PutMapping("/papering")
     public ResponseEntity<BrandSpace> updatePapering(
-            @PathVariable Long corpId,
             @RequestBody PaperingWrapper paperingWrapper) {
-        return ResponseEntity.ok(brandSpaceService.updatePapering(corpId, paperingWrapper.getPapering()));
+        return ResponseEntity.ok(brandSpaceService.updatePapering(getCurrentUserId(), paperingWrapper.getPapering()));
     }
 
     @PostMapping("/qna")
     public ResponseEntity<BrandSpace> saveOrUpdateQna(
-            @PathVariable Long corpId,
             @RequestBody List<BrandSpace.Qna> qnaList) {
-        return ResponseEntity.ok(brandSpaceService.saveOrUpdateQna(corpId, qnaList));
+        return ResponseEntity.ok(brandSpaceService.saveOrUpdateQna(getCurrentUserId(), qnaList));
     }
 }
 

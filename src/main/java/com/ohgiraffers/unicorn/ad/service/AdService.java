@@ -53,6 +53,7 @@ public class AdService {
             ad.setDescription(description);
             ad.setType(type);
             ad.setCorpId(corpId);
+            ad.setIsOpened(ad.getIsOpened());
             return adRepository.save(ad);
         } else {
             Ad ad = new Ad(corpId, fileUrl, type, description);

@@ -2,6 +2,7 @@ package com.ohgiraffers.unicorn.ad.controller;
 
 import com.ohgiraffers.unicorn.ad.entity.Ad;
 import com.ohgiraffers.unicorn.ad.service.AdService;
+import com.ohgiraffers.unicorn.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.io.IOException;
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
-@RequestMapping("/api/ad")
+@RequestMapping("/api/v1/ad")
 public class AdController {
 
     @Autowired
@@ -22,17 +23,18 @@ public class AdController {
     private final Long corpId = 1L;
 
     @PostMapping
-    public ResponseEntity<Ad> createOrUpdateAd(
+    public ResponseEntity<?> createOrUpdateAd(
             @RequestParam("file") MultipartFile file,
             @RequestParam("type") String type,
             @RequestParam("description") String description) {
         try {
-            String fileUrl = adService.uploadFileToS3(file, "ad");
 
-            Ad ad = adService.createOrUpdateAd(getCurrentUserId(), fileUrl, type, description);
-            return ResponseEntity.ok(ad);
+            String fileUrl = adService.uploadFileToS3(file, "ad");
+            adService.createOrUpdateAd(getCurrentUserId(), fileUrl, type, description);
+
+            return ResponseEntity.ok().body(ApiUtils.success(null));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.ok().body(ApiUtils.error(e.getMessage()));
         }
     }
 
