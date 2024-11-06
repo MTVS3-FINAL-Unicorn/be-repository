@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity {
+public class Indiv extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,22 +29,30 @@ public class User extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false)
-    private int age;
+    private String nickname;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     private String gender;
 
+    @Column(nullable = false)
+    private String contact;
+
     @Enumerated(value = EnumType.STRING)
-    @ColumnDefault("'USER'")
+    @ColumnDefault("'INDIV'")
     private Authority authority;
 
     @Builder
-    public User(String email, String password, String name, int age, String gender, Authority authority) {
+    public Indiv(String email, String password, String name, String nickname, String gender, LocalDate birthDate, String contact, Authority authority) {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.age = age;
+        this.nickname = nickname;
+        this.birthDate = birthDate;
         this.gender = gender;
+        this.contact = contact;
         this.authority = authority;
     }
 
