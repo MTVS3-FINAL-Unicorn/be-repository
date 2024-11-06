@@ -51,11 +51,11 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain corpFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        System.out.println("corpFilterChain 들옴_______");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher("/api/v1/auth/corp/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin.disable())
                 .userDetailsService(customCorpDetail)
                 .authorizeHttpRequests((request) -> request
@@ -68,7 +68,6 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        System.out.println("그냥 filterChain 들옴_______");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher("/api/v1/auth/indiv/**")
                 .sessionManagement((sessionManagement) ->

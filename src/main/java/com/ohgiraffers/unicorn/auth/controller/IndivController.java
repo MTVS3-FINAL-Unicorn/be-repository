@@ -46,9 +46,6 @@ public class IndivController {
 
         log.info("로그아웃 시도");
 
-        Long userId = getCurrentUserId();
-        System.out.println("userId = " + userId);
-
         indivService.logout();
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
