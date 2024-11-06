@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdService {
@@ -48,9 +45,19 @@ public class AdService {
     }
 
     // 광고 생성 메서드
-    public Ad createAd(Long corpId, String fileUrl, String type, String description) {
-        Ad ad = new Ad(corpId, fileUrl, type, description);
-        return adRepository.save(ad);
+    public Ad createOrUpdateAd(Long corpId, String fileUrl, String type, String description) {
+        Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
+
+        if (existingAd.isPresent()) {
+            Ad ad = existingAd.get();
+            ad.setDescription(description);
+            ad.setType(type);
+            ad.setCorpId(corpId);
+            return adRepository.save(ad);
+        } else {
+            Ad ad = new Ad(corpId, fileUrl, type, description);
+            return adRepository.save(ad);
+        }
     }
 
     public Ad getAds(Long corpId, int isOpened) {

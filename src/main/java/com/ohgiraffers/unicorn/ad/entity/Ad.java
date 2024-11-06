@@ -2,6 +2,7 @@ package com.ohgiraffers.unicorn.ad.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 public class Ad extends BaseTimeEntity {
@@ -22,7 +23,7 @@ public class Ad extends BaseTimeEntity {
     @Column
     private String description;
 
-    @Column
+    @ColumnDefault("1")
     private int isOpened;
 
     public Ad() {}
