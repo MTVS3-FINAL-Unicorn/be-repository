@@ -1,9 +1,11 @@
 package com.ohgiraffers.unicorn.meeting.controller;
 
+import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.meeting.service.MeetingService;
+import com.ohgiraffers.unicorn.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,10 @@ public class MeetingController {
     }
 
     @GetMapping("/{meetingId}")
-    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long meetingId) {
+    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable("meetingId") Long meetingId) {
         MeetingDTO meeting = meetingService.getMeetingById(meetingId);
+        List<UserResponseDTO.IndivProfileDTO> participants = meetingService.getMeetingParticipants(meetingId);
+        meeting.setParticipants(participants);
         return ResponseEntity.ok(meeting);
     }
 
@@ -60,5 +64,18 @@ public class MeetingController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{meetingId}/join")
+    public ResponseEntity<?> joinMeeting(@PathVariable("meetingId") Long meetingId) {
+        meetingService.joinMeeting(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
+    @PostMapping("/{meetingId}/cancel")
+    public ResponseEntity<?> leaveMeeting(@PathVariable("meetingId") Long meetingId) {
+        meetingService.cancelMeeting(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
 }
 
