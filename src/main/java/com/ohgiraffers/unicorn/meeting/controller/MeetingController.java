@@ -32,7 +32,7 @@ public class MeetingController {
         return ResponseEntity.ok(meeting);
     }
 
-    @PostMapping("/{corpId}")
+    @PostMapping
     public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDTO meeting) {
         meeting.setCorpId(getCurrentUserId());
         Meeting createdMeeting = meetingService.createMeeting(meeting);
