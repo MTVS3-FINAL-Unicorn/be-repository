@@ -13,25 +13,25 @@ import java.util.Map;
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
-@RequestMapping("/api/v1/space/{corpId}")
+@RequestMapping("/api/v1/space")
 public class BrandSpaceController {
 
     @Autowired
     private BrandSpaceService brandSpaceService;
 
-    @GetMapping
+    @GetMapping("/{corpId}")
     public ResponseEntity<BrandSpace> getBrandSpace(@PathVariable Long corpId) {
         return ResponseEntity.ok(brandSpaceService.getBrandSpaceByCorpId(corpId));
     }
 
-    @GetMapping("/questions")
+    @GetMapping("/{corpId}/questions")
     public ResponseEntity<List<BrandSpace.Qna>> getQuestionList(
             @PathVariable Long corpId) {
         List<BrandSpace.Qna> answer = brandSpaceService.getQuestionList(corpId);
         return ResponseEntity.ok(answer);
     }
 
-    @PostMapping("/answer")
+    @PostMapping("/{corpId}/answer")
     public ResponseEntity<String> getQnaAnswer(
             @PathVariable Long corpId,
             @RequestBody Map<String, String> requestBody) {
