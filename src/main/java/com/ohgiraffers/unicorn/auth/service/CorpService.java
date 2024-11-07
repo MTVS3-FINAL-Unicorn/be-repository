@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,11 +70,6 @@ public class CorpService {
     public UserResponseDTO.corpLoginSuccessDTO login(HttpServletRequest httpServletRequest, UserRequestDTO.loginDTO requestDTO) {
         Corp corp = findMemberByEmail(requestDTO.email())
                 .orElseThrow(() -> new Exception401("해당 이메일은 회원 가입 되지 않은 이메일입니다."));
-
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(requestDTO.email(), requestDTO.password());
-        Authentication authentication = authenticationManager.authenticate(authRequest);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
 
