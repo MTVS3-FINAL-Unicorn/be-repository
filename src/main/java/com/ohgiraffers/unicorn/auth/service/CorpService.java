@@ -61,6 +61,7 @@ public class CorpService {
                 .picName(requestDTO.picName())
                 .binNo(requestDTO.binNo())
                 .contact(requestDTO.contact())
+                .categoryId(requestDTO.categoryId())
                 .email(requestDTO.email())
                 .password(passwordEncoder.encode(requestDTO.password()))
                 .authority(Authority.CORP)
@@ -81,7 +82,8 @@ public class CorpService {
                 corp.getBrandName(),
                 corp.getPicName(),
                 corp.getBinNo(),
-                corp.getContact()
+                corp.getContact(),
+                corp.getCategoryId()
         );
     }
 
@@ -109,7 +111,8 @@ public class CorpService {
                 corp.getBrandName(),
                 corp.getPicName(),
                 corp.getBinNo(),
-                corp.getContact()
+                corp.getContact(),
+                corp.getCategoryId()
         );
     }
 
