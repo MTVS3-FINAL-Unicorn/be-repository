@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,31 +23,37 @@ public class Meeting {
     private Long meetingId;
 
     private String meetingTitle;
-
-    @ElementCollection
-    private List<String> participantGender;
-
     private Integer participantAgeStart;
     private Integer participantAgeEnd;
-
     private String rewardType;
-
     private Long rewardPrice;
-
     private LocalDate meetingDate;
-
     private LocalTime meetingTimeStart;
     private LocalTime meetingTimeEnd;
-
     private LocalDateTime recruitmentPeriodStart;
     private LocalDateTime recruitmentPeriodEnd;
-
     private String extraConditions;
-
     private Long corpId;
-
     private boolean hasDeleted = false;
     private boolean isExpired = false;
+
+    @ElementCollection
+    private List<String> participantGender = new ArrayList<>(); // Ensure this field is correctly declared
+
+    @ElementCollection
+    private List<Participant> participantStatus = new ArrayList<>();
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Participant {
+        private Long userId;
+        private String gender;
+
+        @Enumerated(EnumType.STRING)
+        private ParticipantStatus status;
+    }
 
     public void updateExpirationStatus() {
         LocalDateTime now = LocalDateTime.now();
