@@ -191,17 +191,15 @@ public class MeetingService {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
 
-        Meeting.Participant participant = meeting.getParticipantStatus().stream()
-                .filter(p -> p.getUserId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("신청 내역이 존재하지 않습니다."));
+        boolean removed = meeting.getParticipantStatus().removeIf(participant ->
+                participant.getUserId().equals(userId)
+        );
 
-        if (participant.getStatus() == ParticipantStatus.CANCELLED_PENDING ||
-                participant.getStatus() == ParticipantStatus.CANCELLED_CONFIRMED) {
-            throw new IllegalArgumentException("이미 취소된 신청입니다.");
+        if (!removed) {
+            throw new IllegalArgumentException("신청 내역이 존재하지 않습니다.");
         }
 
-        participant.setStatus(ParticipantStatus.CANCELLED_PENDING); // Update status
+        // 변경된 Meeting 객체를 저장하여 삭제된 참가자 정보 반영
         meetingRepository.save(meeting);
     }
 
@@ -244,6 +242,26 @@ public class MeetingService {
             }
         }
         return false;
+    }
+
+    @Transactional
+    public void approveParticipant(Long meetingId, Long participantId, Long corpId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        // 기업이 해당 좌담회를 소유하고 있는지 확인
+        if (!meeting.getCorpId().equals(corpId)) {
+            throw new IllegalArgumentException("해당 좌담회에 대한 권한이 없습니다.");
+        }
+
+        // 신청자의 상태를 승인 상태로 변경
+        Meeting.Participant participant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
+
+        participant.setStatus(ParticipantStatus.APPROVED);
+        meetingRepository.save(meeting);
     }
 }
 
