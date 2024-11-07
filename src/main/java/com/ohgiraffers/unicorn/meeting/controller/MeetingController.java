@@ -72,9 +72,18 @@ public class MeetingController {
     }
 
     @PostMapping("/{meetingId}/cancel")
-    public ResponseEntity<?> leaveMeeting(@PathVariable("meetingId") Long meetingId) {
+    public ResponseEntity<?> cancelMeeting(@PathVariable("meetingId") Long meetingId) {
         meetingService.cancelMeeting(meetingId, getCurrentUserId());
         return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
+    @PostMapping("/{meetingId}/approve/{participantId}")
+    public ResponseEntity<?> approveParticipant(
+            @PathVariable("meetingId") Long meetingId,
+            @PathVariable("participantId") Long participantId) {
+        Long corpId = getCurrentUserId();
+        meetingService.approveParticipant(meetingId, participantId, corpId);
+        return ResponseEntity.ok(ApiUtils.success("참가자 신청이 승인되었습니다."));
     }
 
 }
