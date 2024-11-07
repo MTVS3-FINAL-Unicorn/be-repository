@@ -10,21 +10,47 @@ public class UserResponseDTO {
     ) {
     }
 
-    // 로그인 성공 시 반환하는 DTO
-    public record LoginSuccessDTO(
+    // 기업 회원 로그인 성공 시 반환하는 DTO
+    public record corpLoginSuccessDTO(
+            String grantType,
+            String accessToken,
+            Long accessTokenValidTime,
+            Long id,
+            String brandName,
+            String picName,
+            String binNo,
+            String contact
+    ) {
+    }
+
+    // 개인 회원 로그인 성공 시 반환하는 DTO
+    public record indivLoginSuccessDTO(
             String grantType,
             String accessToken,
             Long accessTokenValidTime,
             Long id,
             String name,
-            int age,
-            String gender
+            String nickname,
+            String contact,
+            int age
     ) {
     }
 
     // getUSerProfile
-    public record UserProfileDTO(
-            String name
+    public record CorpProfileDTO(
+            String brandName,
+            String picName,
+            String binNo,
+            String contact
+    ) {
+    }
+
+    public record IndivProfileDTO(
+            String name,
+            String nickname,
+            int age,
+            String gender,
+            String contact
     ) {
     }
 }
