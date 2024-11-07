@@ -1,14 +1,20 @@
 package com.ohgiraffers.unicorn.meeting.service;
 
+import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
+import com.ohgiraffers.unicorn.auth.entity.Indiv;
+import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
+import com.ohgiraffers.unicorn.meeting.entity.ParticipantStatus;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +23,8 @@ public class MeetingService {
 
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private IndivRepository indivRepository;
 
     public MeetingService(MeetingRepository meetingRepository) {
         this.meetingRepository = meetingRepository;
@@ -54,7 +62,7 @@ public class MeetingService {
         return meetingDTO;
     }
 
-
+    @Transactional
     public Meeting createMeeting(MeetingDTO meetingDTO) {
         Meeting meeting = new Meeting();
 
@@ -99,6 +107,7 @@ public class MeetingService {
         return meetingRepository.save(meeting);
     }
 
+    @Transactional
     public Meeting updateMeeting(Long meetingId, MeetingDTO meetingDTO) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
@@ -141,11 +150,100 @@ public class MeetingService {
         return meetingRepository.save(meeting);
     }
 
+    @Transactional
     public void softDeleteMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
         meeting.setHasDeleted(true);
         meetingRepository.save(meeting);
+    }
+
+    @Transactional
+    public void joinMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid meeting ID"));
+        Indiv user = indivRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+        // Validate age and gender eligibility
+        int userAge = calculateAge(user.getBirthDate());
+        if (userAge < meeting.getParticipantAgeStart() || userAge > meeting.getParticipantAgeEnd()) {
+            throw new IllegalArgumentException("신청 가능한 연령을 확인해주세요.");
+        }
+        if (!meeting.getParticipantGender().contains(user.getGender())) {
+            throw new IllegalArgumentException("신청 가능한 성별을 확인해주세요.");
+        }
+        if (hasScheduleConflict(meeting, userId)) {
+            throw new IllegalArgumentException("해당 시간대에 신청된 좌담회가 있습니다.");
+        }
+
+        // Check if the user is already a participant and add them with PENDING status if not
+        boolean isAlreadyParticipant = meeting.getParticipantStatus().stream()
+                .anyMatch(p -> p.getUserId().equals(userId));
+        if (!isAlreadyParticipant) {
+            meeting.getParticipantStatus().add(new Meeting.Participant(userId, user.getGender(), ParticipantStatus.PENDING));
+            meetingRepository.save(meeting);
+        }
+    }
+
+    @Transactional
+    public void cancelMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        Meeting.Participant participant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("신청 내역이 존재하지 않습니다."));
+
+        if (participant.getStatus() == ParticipantStatus.CANCELLED_PENDING ||
+                participant.getStatus() == ParticipantStatus.CANCELLED_CONFIRMED) {
+            throw new IllegalArgumentException("이미 취소된 신청입니다.");
+        }
+
+        participant.setStatus(ParticipantStatus.CANCELLED_PENDING); // Update status
+        meetingRepository.save(meeting);
+    }
+
+    public List<UserResponseDTO.IndivProfileDTO> getMeetingParticipants(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        // Participant ID 리스트 추출
+        List<Long> participantIds = meeting.getParticipantStatus().stream()
+                .map(Meeting.Participant::getUserId)
+                .collect(Collectors.toList());
+
+        // 해당하는 모든 Indiv 엔티티 조회 후, IndivProfileDTO로 변환
+        return indivRepository.findAllById(participantIds).stream()
+                .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                        indiv.getName(),
+                        indiv.getNickname(),
+                        calculateAge(indiv.getBirthDate()),
+                        indiv.getGender(),
+                        indiv.getContact(),
+                        indiv.getCategoryId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    // 사용자 연령 계산
+    private int calculateAge(LocalDate birthDate) {
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    // 스케쥴 중복 여부 확인
+    private boolean hasScheduleConflict(Meeting newMeeting, Long userId) {
+        List<Meeting> userMeetings = meetingRepository.findAllByParticipantUserId(userId);
+
+        for (Meeting meeting : userMeetings) {
+            if (meeting.getMeetingDate().equals(newMeeting.getMeetingDate()) &&
+                    ((newMeeting.getMeetingTimeStart().isBefore(meeting.getMeetingTimeEnd()) &&
+                            newMeeting.getMeetingTimeEnd().isAfter(meeting.getMeetingTimeStart())))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
