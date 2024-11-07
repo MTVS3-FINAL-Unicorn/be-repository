@@ -18,6 +18,8 @@ public class MeetingController {
 
     @Autowired
     private MeetingService meetingService;
+
+    @Autowired
     private MeetingRepository meetingRepository;
 
     @GetMapping
