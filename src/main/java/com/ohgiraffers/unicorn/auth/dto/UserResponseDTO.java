@@ -21,7 +21,8 @@ public class UserResponseDTO {
             String brandName,
             String picName,
             String binNo,
-            String contact
+            String contact,
+            int categoryId
     ) {
     }
 
@@ -44,7 +45,8 @@ public class UserResponseDTO {
             String brandName,
             String picName,
             String binNo,
-            String contact
+            String contact,
+            int categoryId
     ) {
     }
 
