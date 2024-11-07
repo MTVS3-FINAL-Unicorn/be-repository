@@ -59,6 +59,7 @@ public class IndivService {
                 indiv.getName(),
                 indiv.getBirthDate().toString(),
                 indiv.getContact(),
+                indiv.getCategoryId(),
                 age
         );
     }
@@ -81,6 +82,7 @@ public class IndivService {
                 .birthDate(birthDate)
                 .gender(requestDTO.gender())
                 .contact(requestDTO.contact())
+                .categoryId(requestDTO.categoryId())
                 .authority(Authority.INDIV)
                 .build();
     }
@@ -106,7 +108,8 @@ public class IndivService {
                 indiv.getNickname(),
                 age,
                 indiv.getGender(),
-                indiv.getContact()
+                indiv.getContact(),
+                indiv.getCategoryId()
                 );
     }
 }

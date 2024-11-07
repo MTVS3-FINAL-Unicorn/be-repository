@@ -1,5 +1,7 @@
 package com.ohgiraffers.unicorn.auth.dto;
 
+import java.util.List;
+
 public class UserResponseDTO {
 
     // 토큰 발급
@@ -19,7 +21,8 @@ public class UserResponseDTO {
             String brandName,
             String picName,
             String binNo,
-            String contact
+            String contact,
+            int categoryId
     ) {
     }
 
@@ -32,6 +35,7 @@ public class UserResponseDTO {
             String name,
             String nickname,
             String contact,
+            List<Integer> categoryId,
             int age
     ) {
     }
@@ -41,7 +45,8 @@ public class UserResponseDTO {
             String brandName,
             String picName,
             String binNo,
-            String contact
+            String contact,
+            int categoryId
     ) {
     }
 
@@ -50,7 +55,8 @@ public class UserResponseDTO {
             String nickname,
             int age,
             String gender,
-            String contact
+            String contact,
+            List<Integer> categoryId
     ) {
     }
 }
