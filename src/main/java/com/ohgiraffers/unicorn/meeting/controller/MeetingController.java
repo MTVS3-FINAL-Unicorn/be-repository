@@ -27,6 +27,7 @@ public class MeetingController {
     @GetMapping
     public ResponseEntity<List<MeetingDTO>> getAllMeetings() {
         List<MeetingDTO> meetings = meetingService.getAllMeetings();
+
         return ResponseEntity.ok(meetings);
     }
 
@@ -68,13 +69,22 @@ public class MeetingController {
     @PostMapping("/{meetingId}/join")
     public ResponseEntity<?> joinMeeting(@PathVariable("meetingId") Long meetingId) {
         meetingService.joinMeeting(meetingId, getCurrentUserId());
-        return ResponseEntity.ok(ApiUtils.success(null));
+        return ResponseEntity.ok(ApiUtils.success("좌담회 신청이 완료되었습니다."));
     }
 
     @PostMapping("/{meetingId}/cancel")
     public ResponseEntity<?> cancelMeeting(@PathVariable("meetingId") Long meetingId) {
         meetingService.cancelMeeting(meetingId, getCurrentUserId());
-        return ResponseEntity.ok(ApiUtils.success(null));
+        return ResponseEntity.ok(ApiUtils.success("좌담회 신청이 취소되었습니다."));
+    }
+
+    @PostMapping("/{meetingId}/reject/{participantId}")
+    public ResponseEntity<?> rejectParticipant(
+            @PathVariable("meetingId") Long meetingId,
+            @PathVariable("participantId") Long participantId){
+        Long corpId = getCurrentUserId();
+        meetingService.rejectParticipant(meetingId, participantId, corpId);
+        return ResponseEntity.ok(ApiUtils.success("참가 신청이 거절되었습니다."));
     }
 
     @PostMapping("/{meetingId}/approve/{participantId}")
@@ -83,7 +93,7 @@ public class MeetingController {
             @PathVariable("participantId") Long participantId) {
         Long corpId = getCurrentUserId();
         meetingService.approveParticipant(meetingId, participantId, corpId);
-        return ResponseEntity.ok(ApiUtils.success("참가자 신청이 승인되었습니다."));
+        return ResponseEntity.ok(ApiUtils.success("참가 신청이 승인되었습니다."));
     }
 
 }
