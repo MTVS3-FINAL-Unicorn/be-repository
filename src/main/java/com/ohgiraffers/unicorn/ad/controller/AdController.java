@@ -41,7 +41,7 @@ public class AdController {
             String fileUrl = adService.uploadFileToS3(file, "ad");
 
             // 광고 생성 또는 업데이트
-            Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description);
+            Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description,1);
 
             return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
@@ -50,8 +50,8 @@ public class AdController {
     }
 
     @GetMapping("/{adId}")
-    public ResponseEntity<Ad> getAd(@PathVariable Long adId) {
-        Ad ad = adService.getAds(adId);
+    public ResponseEntity<Ad> getAd(@PathVariable("adId") Long adId) {
+        Ad ad = adService.findByAdIdAndIsOpened(adId);
         return ResponseEntity.ok(ad);
     }
 }
