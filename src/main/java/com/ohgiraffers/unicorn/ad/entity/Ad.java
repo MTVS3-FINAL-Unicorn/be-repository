@@ -31,12 +31,12 @@ public class Ad extends BaseTimeEntity {
 
     public Ad() {}
 
-    public Ad(Long corpId, String fileUrl, String type, String description, String adVideoUrl) {
+    public Ad(Long corpId, String fileUrl, String type, String description, Integer isOpened) {
         this.corpId = corpId;
         this.fileUrl = fileUrl;
         this.type = type;
         this.description = description;
-        this.adVideoUrl = adVideoUrl;
+        this.isOpened = isOpened;
     }
 
     public Long getAdId() {
