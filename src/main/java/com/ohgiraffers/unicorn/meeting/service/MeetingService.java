@@ -37,6 +37,13 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
+    // 단일 조회 메서드
+    public MeetingDTO getMeetingById(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
+        return convertToDtoWithFilteredParticipants(meeting);
+    }
+
     private MeetingDTO convertToDtoWithFilteredParticipants(Meeting meeting) {
         MeetingDTO meetingDTO = convertToDto(meeting);
 
@@ -58,14 +65,6 @@ public class MeetingService {
 
         meetingDTO.setParticipants(filteredParticipants);
         return meetingDTO;
-    }
-
-
-    // 단일 조회 메서드
-    public MeetingDTO getMeetingById(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
-        return convertToDto(meeting);
     }
 
     // Meeting 엔티티를 MeetingDTO로 변환하는 메서드
