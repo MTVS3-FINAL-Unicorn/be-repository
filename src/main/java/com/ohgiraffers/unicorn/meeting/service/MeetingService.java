@@ -33,6 +33,7 @@ public class MeetingService {
     // 전체 조회 메서드
     public List<MeetingDTO> getAllMeetings() {
         return meetingRepository.findAll().stream()
+                .filter(meeting -> !meeting.isHasDeleted() && !meeting.isExpired())
                 .map(this::convertToDtoWithFilteredParticipants)
                 .collect(Collectors.toList());
     }
