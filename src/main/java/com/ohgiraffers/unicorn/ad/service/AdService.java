@@ -31,25 +31,22 @@ public class AdService {
 
     // 광고 생성 또는 업데이트 메서드
 
-    public Ad createOrUpdateAd(Long corpId, String fileUrl, String type, String description) {
-        // AI 서버에 광고 생성 요청하면 받아올 Url
-        String adVideoUrl = null;
-//                requestAdGenerationToAI(fileUrl, type, description);
+    public Ad createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpended) {
 
         // 기존 광고가 있는지 확인하여 생성 또는 업데이트
         Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
 
         if (existingAd.isPresent()) {
             Ad ad = existingAd.get();
-            ad.setDescription(description);
-            ad.setType(type);
             ad.setCorpId(corpId);
             ad.setFileUrl(fileUrl); // S3 이미지 파일 URL
-            ad.setAdVideoUrl(adVideoUrl); // AI 생성 광고 영상 URL
+            ad.setType(type);
+            ad.setDescription(description);
             ad.setIsOpened(ad.getIsOpened());
+
             return adRepository.save(ad);
         } else {
-            Ad ad = new Ad(corpId, fileUrl, adVideoUrl, type, description);
+            Ad ad = new Ad(corpId, fileUrl, type, description, isOpended);
             return adRepository.save(ad);
         }
     }
@@ -80,7 +77,7 @@ public class AdService {
         logger.info("File deleted from S3: {}", fileUrl);
     }
 
-    public Ad getAds(Long adId) {
+    public Ad findByAdIdAndIsOpened(Long adId) {
         return adRepository.findByAdIdAndIsOpened(adId, 1)
                 .orElseThrow(() -> new IllegalArgumentException("요청하신 광고를 찾을 수 없습니다."));
     }

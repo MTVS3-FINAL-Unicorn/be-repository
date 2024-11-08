@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://223.130.152.102:3306/bridge_db
+    url: jdbc:mysql://223.130.152.102:3306/unicorn_db
     username: user
     password: 1234
 
