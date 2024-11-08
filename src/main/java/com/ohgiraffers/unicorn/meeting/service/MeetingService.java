@@ -263,5 +263,23 @@ public class MeetingService {
         participant.setStatus(ParticipantStatus.APPROVED);
         meetingRepository.save(meeting);
     }
+
+    @Transactional
+    public void rejectParticipant(Long meetingId, Long participantId, Long corpId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        if (!meeting.getCorpId().equals(corpId)) {
+            throw new IllegalArgumentException("해당 좌담회에 대한 권한이 없습니다.");
+        }
+
+        Meeting.Participant participant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
+
+        participant.setStatus(ParticipantStatus.REJECTED);
+        meetingRepository.save(meeting);
+    }
 }
 
