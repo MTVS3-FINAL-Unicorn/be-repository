@@ -189,26 +189,34 @@ public class MeetingService {
         Indiv user = indivRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-        // Validate age and gender eligibility
-        int userAge = calculateAge(user.getBirthDate());
-        if (userAge < meeting.getParticipantAgeStart() || userAge > meeting.getParticipantAgeEnd()) {
-            throw new IllegalArgumentException("신청 가능한 연령을 확인해주세요.");
-        }
-        if (!meeting.getParticipantGender().contains(user.getGender())) {
-            throw new IllegalArgumentException("신청 가능한 성별을 확인해주세요.");
-        }
-        if (hasScheduleConflict(meeting, userId)) {
-            throw new IllegalArgumentException("해당 시간대에 신청된 좌담회가 있습니다.");
-        }
+        // 참가자 목록에서 사용자를 찾고, 상태 확인
+        Meeting.Participant existingParticipant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
 
-        // Check if the user is already a participant and add them with PENDING status if not
-        boolean isAlreadyParticipant = meeting.getParticipantStatus().stream()
-                .anyMatch(p -> p.getUserId().equals(userId));
-        if (!isAlreadyParticipant) {
+        if (existingParticipant != null) {
+            if (existingParticipant.getStatus() == ParticipantStatus.REJECTED) {
+                throw new IllegalArgumentException("참여할 수 없는 좌담회입니다");
+            }
+        } else {
+            // 연령 및 성별 검증 후 새로운 참가자로 추가
+            int userAge = calculateAge(user.getBirthDate());
+            if (userAge < meeting.getParticipantAgeStart() || userAge > meeting.getParticipantAgeEnd()) {
+                throw new IllegalArgumentException("신청 가능한 연령을 확인해주세요.");
+            }
+            if (!meeting.getParticipantGender().contains(user.getGender())) {
+                throw new IllegalArgumentException("신청 가능한 성별을 확인해주세요.");
+            }
+            if (hasScheduleConflict(meeting, userId)) {
+                throw new IllegalArgumentException("해당 시간대에 신청된 좌담회가 있습니다.");
+            }
+
             meeting.getParticipantStatus().add(new Meeting.Participant(userId, user.getGender(), ParticipantStatus.PENDING));
             meetingRepository.save(meeting);
         }
     }
+
 
     @Transactional
     public void cancelMeeting(Long meetingId, Long userId) {
