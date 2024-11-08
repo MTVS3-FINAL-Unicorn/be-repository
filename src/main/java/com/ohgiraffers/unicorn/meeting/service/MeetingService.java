@@ -267,7 +267,11 @@ public class MeetingService {
         List<Meeting> userMeetings = meetingRepository.findAllByParticipantUserId(userId);
 
         for (Meeting meeting : userMeetings) {
-            if (meeting.getMeetingDate().equals(newMeeting.getMeetingDate()) &&
+            boolean isPendingOrApproved = meeting.getParticipantStatus().stream()
+                    .anyMatch(p -> p.getUserId().equals(userId) &&
+                            (p.getStatus() == ParticipantStatus.PENDING || p.getStatus() == ParticipantStatus.APPROVED));
+
+            if (isPendingOrApproved && meeting.getMeetingDate().equals(newMeeting.getMeetingDate()) &&
                     ((newMeeting.getMeetingTimeStart().isBefore(meeting.getMeetingTimeEnd()) &&
                             newMeeting.getMeetingTimeEnd().isAfter(meeting.getMeetingTimeStart())))) {
                 return true;
