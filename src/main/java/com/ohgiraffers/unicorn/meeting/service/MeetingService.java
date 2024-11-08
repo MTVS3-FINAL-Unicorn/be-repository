@@ -33,9 +33,33 @@ public class MeetingService {
     // 전체 조회 메서드
     public List<MeetingDTO> getAllMeetings() {
         return meetingRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(this::convertToDtoWithFilteredParticipants)
                 .collect(Collectors.toList());
     }
+
+    private MeetingDTO convertToDtoWithFilteredParticipants(Meeting meeting) {
+        MeetingDTO meetingDTO = convertToDto(meeting);
+
+        List<UserResponseDTO.IndivProfileDTO> filteredParticipants = meeting.getParticipantStatus().stream()
+                .filter(participant -> participant.getStatus() == ParticipantStatus.PENDING
+                        || participant.getStatus() == ParticipantStatus.APPROVED)
+                .map(participant -> indivRepository.findById(participant.getUserId())
+                        .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                                indiv.getName(),
+                                indiv.getNickname(),
+                                calculateAge(indiv.getBirthDate()),
+                                indiv.getGender(),
+                                indiv.getContact(),
+                                indiv.getCategoryId()
+                        ))
+                        .orElse(null))
+                .filter(profile -> profile != null)
+                .collect(Collectors.toList());
+
+        meetingDTO.setParticipants(filteredParticipants);
+        return meetingDTO;
+    }
+
 
     // 단일 조회 메서드
     public MeetingDTO getMeetingById(Long meetingId) {
