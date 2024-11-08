@@ -1,14 +1,20 @@
 package com.ohgiraffers.unicorn.meeting.service;
 
+import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
+import com.ohgiraffers.unicorn.auth.entity.Indiv;
+import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
+import com.ohgiraffers.unicorn.meeting.entity.ParticipantStatus;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +23,8 @@ public class MeetingService {
 
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private IndivRepository indivRepository;
 
     public MeetingService(MeetingRepository meetingRepository) {
         this.meetingRepository = meetingRepository;
@@ -25,7 +33,7 @@ public class MeetingService {
     // 전체 조회 메서드
     public List<MeetingDTO> getAllMeetings() {
         return meetingRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(this::convertToDtoWithFilteredParticipants)
                 .collect(Collectors.toList());
     }
 
@@ -33,7 +41,30 @@ public class MeetingService {
     public MeetingDTO getMeetingById(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
-        return convertToDto(meeting);
+        return convertToDtoWithFilteredParticipants(meeting);
+    }
+
+    private MeetingDTO convertToDtoWithFilteredParticipants(Meeting meeting) {
+        MeetingDTO meetingDTO = convertToDto(meeting);
+
+        List<UserResponseDTO.IndivProfileDTO> filteredParticipants = meeting.getParticipantStatus().stream()
+                .filter(participant -> participant.getStatus() == ParticipantStatus.PENDING
+                        || participant.getStatus() == ParticipantStatus.APPROVED)
+                .map(participant -> indivRepository.findById(participant.getUserId())
+                        .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                                indiv.getName(),
+                                indiv.getNickname(),
+                                calculateAge(indiv.getBirthDate()),
+                                indiv.getGender(),
+                                indiv.getContact(),
+                                indiv.getCategoryId()
+                        ))
+                        .orElse(null))
+                .filter(profile -> profile != null)
+                .collect(Collectors.toList());
+
+        meetingDTO.setParticipants(filteredParticipants);
+        return meetingDTO;
     }
 
     // Meeting 엔티티를 MeetingDTO로 변환하는 메서드
@@ -54,7 +85,7 @@ public class MeetingService {
         return meetingDTO;
     }
 
-
+    @Transactional
     public Meeting createMeeting(MeetingDTO meetingDTO) {
         Meeting meeting = new Meeting();
 
@@ -92,13 +123,14 @@ public class MeetingService {
         // 모집 기간 범위 설정
         if (meetingDTO.getRecruitmentPeriod() != null) {
             String[] periodRange = meetingDTO.getRecruitmentPeriod().split(" - ");
-            meeting.setRecruitmentPeriodStart(LocalDateTime.parse(periodRange[0]));
-            meeting.setRecruitmentPeriodEnd(LocalDateTime.parse(periodRange[1]));
+            meeting.setRecruitmentPeriodStart(LocalDate.parse(periodRange[0]));
+            meeting.setRecruitmentPeriodEnd(LocalDate.parse(periodRange[1]));
         }
 
         return meetingRepository.save(meeting);
     }
 
+    @Transactional
     public Meeting updateMeeting(Long meetingId, MeetingDTO meetingDTO) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
@@ -134,17 +166,150 @@ public class MeetingService {
         // 모집 기간 범위 설정
         if (meetingDTO.getRecruitmentPeriod() != null) {
             String[] periodRange = meetingDTO.getRecruitmentPeriod().split(" - ");
-            meeting.setRecruitmentPeriodStart(LocalDateTime.parse(periodRange[0]));
-            meeting.setRecruitmentPeriodEnd(LocalDateTime.parse(periodRange[1]));
+            meeting.setRecruitmentPeriodStart(LocalDate.parse(periodRange[0]));
+            meeting.setRecruitmentPeriodEnd(LocalDate.parse(periodRange[1]));
         }
 
         return meetingRepository.save(meeting);
     }
 
+    @Transactional
     public void softDeleteMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
         meeting.setHasDeleted(true);
+        meetingRepository.save(meeting);
+    }
+
+    @Transactional
+    public void joinMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid meeting ID"));
+        Indiv user = indivRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+        // 참가자 목록에서 사용자를 찾고, 상태 확인
+        Meeting.Participant existingParticipant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        if (existingParticipant != null) {
+            if (existingParticipant.getStatus() == ParticipantStatus.REJECTED) {
+                throw new IllegalArgumentException("참여할 수 없는 좌담회입니다");
+            }
+        } else {
+            // 연령 및 성별 검증 후 새로운 참가자로 추가
+            int userAge = calculateAge(user.getBirthDate());
+            if (userAge < meeting.getParticipantAgeStart() || userAge > meeting.getParticipantAgeEnd()) {
+                throw new IllegalArgumentException("신청 가능한 연령을 확인해주세요.");
+            }
+            if (!meeting.getParticipantGender().contains(user.getGender())) {
+                throw new IllegalArgumentException("신청 가능한 성별을 확인해주세요.");
+            }
+            if (hasScheduleConflict(meeting, userId)) {
+                throw new IllegalArgumentException("해당 시간대에 신청된 좌담회가 있습니다.");
+            }
+
+            meeting.getParticipantStatus().add(new Meeting.Participant(userId, user.getGender(), ParticipantStatus.PENDING));
+            meetingRepository.save(meeting);
+        }
+    }
+
+
+    @Transactional
+    public void cancelMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        boolean removed = meeting.getParticipantStatus().removeIf(participant ->
+                participant.getUserId().equals(userId)
+        );
+
+        if (!removed) {
+            throw new IllegalArgumentException("신청 내역이 존재하지 않습니다.");
+        }
+
+        // 변경된 Meeting 객체를 저장하여 삭제된 참가자 정보 반영
+        meetingRepository.save(meeting);
+    }
+
+    public List<UserResponseDTO.IndivProfileDTO> getMeetingParticipants(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        // Participant ID 리스트 추출
+        List<Long> participantIds = meeting.getParticipantStatus().stream()
+                .map(Meeting.Participant::getUserId)
+                .collect(Collectors.toList());
+
+        // 해당하는 모든 Indiv 엔티티 조회 후, IndivProfileDTO로 변환
+        return indivRepository.findAllById(participantIds).stream()
+                .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                        indiv.getName(),
+                        indiv.getNickname(),
+                        calculateAge(indiv.getBirthDate()),
+                        indiv.getGender(),
+                        indiv.getContact(),
+                        indiv.getCategoryId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    // 사용자 연령 계산
+    private int calculateAge(LocalDate birthDate) {
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    // 스케쥴 중복 여부 확인
+    private boolean hasScheduleConflict(Meeting newMeeting, Long userId) {
+        List<Meeting> userMeetings = meetingRepository.findAllByParticipantUserId(userId);
+
+        for (Meeting meeting : userMeetings) {
+            if (meeting.getMeetingDate().equals(newMeeting.getMeetingDate()) &&
+                    ((newMeeting.getMeetingTimeStart().isBefore(meeting.getMeetingTimeEnd()) &&
+                            newMeeting.getMeetingTimeEnd().isAfter(meeting.getMeetingTimeStart())))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transactional
+    public void approveParticipant(Long meetingId, Long participantId, Long corpId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        // 기업이 해당 좌담회를 소유하고 있는지 확인
+        if (!meeting.getCorpId().equals(corpId)) {
+            throw new IllegalArgumentException("해당 좌담회에 대한 권한이 없습니다.");
+        }
+
+        // 신청자의 상태를 승인 상태로 변경
+        Meeting.Participant participant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
+
+        participant.setStatus(ParticipantStatus.APPROVED);
+        meetingRepository.save(meeting);
+    }
+
+    @Transactional
+    public void rejectParticipant(Long meetingId, Long participantId, Long corpId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
+
+        if (!meeting.getCorpId().equals(corpId)) {
+            throw new IllegalArgumentException("해당 좌담회에 대한 권한이 없습니다.");
+        }
+
+        Meeting.Participant participant = meeting.getParticipantStatus().stream()
+                .filter(p -> p.getUserId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
+
+        participant.setStatus(ParticipantStatus.REJECTED);
         meetingRepository.save(meeting);
     }
 }

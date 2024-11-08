@@ -1,9 +1,11 @@
 package com.ohgiraffers.unicorn.meeting.controller;
 
+import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.meeting.service.MeetingService;
+import com.ohgiraffers.unicorn.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +27,15 @@ public class MeetingController {
     @GetMapping
     public ResponseEntity<List<MeetingDTO>> getAllMeetings() {
         List<MeetingDTO> meetings = meetingService.getAllMeetings();
+
         return ResponseEntity.ok(meetings);
     }
 
     @GetMapping("/{meetingId}")
-    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long meetingId) {
+    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable("meetingId") Long meetingId) {
         MeetingDTO meeting = meetingService.getMeetingById(meetingId);
+        List<UserResponseDTO.IndivProfileDTO> participants = meetingService.getMeetingParticipants(meetingId);
+        meeting.setParticipants(participants);
         return ResponseEntity.ok(meeting);
     }
 
@@ -60,5 +65,36 @@ public class MeetingController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{meetingId}/join")
+    public ResponseEntity<?> joinMeeting(@PathVariable("meetingId") Long meetingId) {
+        meetingService.joinMeeting(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(ApiUtils.success("좌담회 신청이 완료되었습니다."));
+    }
+
+    @PostMapping("/{meetingId}/cancel")
+    public ResponseEntity<?> cancelMeeting(@PathVariable("meetingId") Long meetingId) {
+        meetingService.cancelMeeting(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(ApiUtils.success("좌담회 신청이 취소되었습니다."));
+    }
+
+    @PostMapping("/{meetingId}/reject/{participantId}")
+    public ResponseEntity<?> rejectParticipant(
+            @PathVariable("meetingId") Long meetingId,
+            @PathVariable("participantId") Long participantId){
+        Long corpId = getCurrentUserId();
+        meetingService.rejectParticipant(meetingId, participantId, corpId);
+        return ResponseEntity.ok(ApiUtils.success("참가 신청이 거절되었습니다."));
+    }
+
+    @PostMapping("/{meetingId}/approve/{participantId}")
+    public ResponseEntity<?> approveParticipant(
+            @PathVariable("meetingId") Long meetingId,
+            @PathVariable("participantId") Long participantId) {
+        Long corpId = getCurrentUserId();
+        meetingService.approveParticipant(meetingId, participantId, corpId);
+        return ResponseEntity.ok(ApiUtils.success("참가 신청이 승인되었습니다."));
+    }
+
 }
 
