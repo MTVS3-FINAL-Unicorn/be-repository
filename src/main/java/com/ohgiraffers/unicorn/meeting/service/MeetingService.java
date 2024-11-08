@@ -53,6 +53,7 @@ public class MeetingService {
                         || participant.getStatus() == ParticipantStatus.APPROVED)
                 .map(participant -> indivRepository.findById(participant.getUserId())
                         .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                                indiv.getId(),
                                 indiv.getName(),
                                 indiv.getNickname(),
                                 calculateAge(indiv.getBirthDate()),
@@ -71,6 +72,7 @@ public class MeetingService {
     // Meeting 엔티티를 MeetingDTO로 변환하는 메서드
     private MeetingDTO convertToDto(Meeting meeting) {
         MeetingDTO meetingDTO = new MeetingDTO();
+        meetingDTO.setMeetingId(meeting.getMeetingId());
         meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
         meetingDTO.setParticipantGender(meeting.getParticipantGender());
         meetingDTO.setParticipantAge(
@@ -247,6 +249,7 @@ public class MeetingService {
         // 해당하는 모든 Indiv 엔티티 조회 후, IndivProfileDTO로 변환
         return indivRepository.findAllById(participantIds).stream()
                 .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                        indiv.getId(),
                         indiv.getName(),
                         indiv.getNickname(),
                         calculateAge(indiv.getBirthDate()),

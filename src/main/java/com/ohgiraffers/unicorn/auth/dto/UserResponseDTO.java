@@ -17,7 +17,7 @@ public class UserResponseDTO {
             String grantType,
             String accessToken,
             Long accessTokenValidTime,
-            Long id,
+            Long corpId,
             String brandName,
             String picName,
             String binNo,
@@ -31,7 +31,7 @@ public class UserResponseDTO {
             String grantType,
             String accessToken,
             Long accessTokenValidTime,
-            Long id,
+            Long indivId,
             String name,
             String nickname,
             String contact,
@@ -42,6 +42,7 @@ public class UserResponseDTO {
 
     // getUSerProfile
     public record CorpProfileDTO(
+            Long corpId,
             String brandName,
             String picName,
             String binNo,
@@ -51,6 +52,7 @@ public class UserResponseDTO {
     }
 
     public record IndivProfileDTO(
+            Long indivId,
             String name,
             String nickname,
             int age,
