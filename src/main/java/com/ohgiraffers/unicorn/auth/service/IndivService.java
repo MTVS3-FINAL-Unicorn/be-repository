@@ -104,6 +104,7 @@ public class IndivService {
         int age = calculateAge(indiv.getBirthDate());
 
         return new UserResponseDTO.IndivProfileDTO(
+                indiv.getId(),
                 indiv.getName(),
                 indiv.getNickname(),
                 age,

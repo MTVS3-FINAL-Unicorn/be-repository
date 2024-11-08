@@ -108,6 +108,7 @@ public class CorpService {
                 .orElseThrow(() -> new Exception401("로그인부터 해주세요"));
 
         return new UserResponseDTO.CorpProfileDTO(
+                corp.getId(),
                 corp.getBrandName(),
                 corp.getPicName(),
                 corp.getBinNo(),
