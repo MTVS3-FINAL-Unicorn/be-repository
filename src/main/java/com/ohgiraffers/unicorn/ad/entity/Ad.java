@@ -15,7 +15,7 @@ public class Ad extends BaseTimeEntity {
     private Long corpId;
 
     @Column
-    private String mediaUrl;
+    private String fileUrl;
 
     @Column
     private String type;
@@ -23,16 +23,20 @@ public class Ad extends BaseTimeEntity {
     @Column
     private String description;
 
+    @Column
+    private String adVideoUrl;
+
     @ColumnDefault("1")
     private Integer isOpened;
 
     public Ad() {}
 
-    public Ad(Long corpId, String mediaUrl, String type, String description) {
+    public Ad(Long corpId, String fileUrl, String type, String description, String adVideoUrl) {
         this.corpId = corpId;
-        this.mediaUrl = mediaUrl;
+        this.fileUrl = fileUrl;
         this.type = type;
         this.description = description;
+        this.adVideoUrl = adVideoUrl;
     }
 
     public Long getAdId() {
@@ -51,12 +55,12 @@ public class Ad extends BaseTimeEntity {
         this.corpId = corpId;
     }
 
-    public String getMediaUrl() {
-        return mediaUrl;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setMediaUrl(String mediaUrl) {
-        this.mediaUrl = mediaUrl;
+    public void setFileUrl(String mediaUrl) {
+        this.fileUrl = mediaUrl;
     }
 
     public String getType() {
@@ -83,14 +87,19 @@ public class Ad extends BaseTimeEntity {
         this.isOpened = isOpened;
     }
 
+    public String getAdVideoUrl() { return adVideoUrl; }
+
+    public void setAdVideoUrl(String adVideoUrl) { this.adVideoUrl = adVideoUrl; }
+
     @Override
     public String toString() {
         return "Ad{" +
                 "adId=" + adId +
                 ", corpId='" + corpId + '\'' +
-                ", mediaUrl='" + mediaUrl + '\'' +
+                ", fileUrl='" + fileUrl + '\'' +
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
+                ", adVideoUrl='" + adVideoUrl + '\'' +
                 ", isOpened=" + isOpened +
                 '}';
     }

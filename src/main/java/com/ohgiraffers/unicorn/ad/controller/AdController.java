@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
@@ -19,28 +20,38 @@ public class AdController {
     @Autowired
     private AdService adService;
 
-    // 하드코딩된 corpId (로그인 미구현 상태)
-    private final Long corpId = 1L;
-
     @PostMapping
     public ResponseEntity<?> createOrUpdateAd(
             @RequestParam("file") MultipartFile file,
             @RequestParam("type") String type,
             @RequestParam("description") String description) {
+
         try {
+            // 현재 사용자 ID 가져오기
+            Long corpId = getCurrentUserId();
 
+            Optional<Ad> existingAd = adService.findAdByUserId(corpId);
+
+            // 기존 파일이 존재할 경우 삭제
+            if (existingAd.isPresent() && existingAd.get().getFileUrl() != null) {
+                adService.deleteFileFromS3(existingAd.get().getFileUrl());
+            }
+
+            // 새 파일 업로드
             String fileUrl = adService.uploadFileToS3(file, "ad");
-            adService.createOrUpdateAd(getCurrentUserId(), fileUrl, type, description);
 
-            return ResponseEntity.ok().body(ApiUtils.success(null));
+            // 광고 생성 또는 업데이트
+            Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description);
+
+            return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
             return ResponseEntity.ok().body(ApiUtils.error(e.getMessage()));
         }
     }
 
-    @GetMapping
-    public ResponseEntity<Ad> getAd() {
-        Ad ad = adService.getAds(corpId, 1);
+    @GetMapping("/{adId}")
+    public ResponseEntity<Ad> getAd(@PathVariable Long adId) {
+        Ad ad = adService.getAds(adId);
         return ResponseEntity.ok(ad);
     }
 }
