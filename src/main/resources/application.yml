@@ -5,6 +5,10 @@ spring:
     username: user
     password: 1234
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
   data:
     mongodb:
       uri: mongodb://user:1234@223.130.152.102:27017/brand_space_db
