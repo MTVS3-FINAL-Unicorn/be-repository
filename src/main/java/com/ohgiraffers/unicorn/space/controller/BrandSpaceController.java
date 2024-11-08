@@ -20,7 +20,7 @@ public class BrandSpaceController {
     private BrandSpaceService brandSpaceService;
 
     @GetMapping("/{corpId}")
-    public ResponseEntity<BrandSpace> getBrandSpace(@PathVariable Long corpId) {
+    public ResponseEntity<BrandSpace> getBrandSpace(@PathVariable("corpId") Long corpId) {
         return ResponseEntity.ok(brandSpaceService.getBrandSpaceByCorpId(corpId));
     }
 
