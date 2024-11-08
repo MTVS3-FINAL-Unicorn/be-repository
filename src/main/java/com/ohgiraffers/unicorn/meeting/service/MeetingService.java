@@ -123,8 +123,8 @@ public class MeetingService {
         // 모집 기간 범위 설정
         if (meetingDTO.getRecruitmentPeriod() != null) {
             String[] periodRange = meetingDTO.getRecruitmentPeriod().split(" - ");
-            meeting.setRecruitmentPeriodStart(LocalDateTime.parse(periodRange[0]));
-            meeting.setRecruitmentPeriodEnd(LocalDateTime.parse(periodRange[1]));
+            meeting.setRecruitmentPeriodStart(LocalDate.parse(periodRange[0]));
+            meeting.setRecruitmentPeriodEnd(LocalDate.parse(periodRange[1]));
         }
 
         return meetingRepository.save(meeting);
@@ -166,8 +166,8 @@ public class MeetingService {
         // 모집 기간 범위 설정
         if (meetingDTO.getRecruitmentPeriod() != null) {
             String[] periodRange = meetingDTO.getRecruitmentPeriod().split(" - ");
-            meeting.setRecruitmentPeriodStart(LocalDateTime.parse(periodRange[0]));
-            meeting.setRecruitmentPeriodEnd(LocalDateTime.parse(periodRange[1]));
+            meeting.setRecruitmentPeriodStart(LocalDate.parse(periodRange[0]));
+            meeting.setRecruitmentPeriodEnd(LocalDate.parse(periodRange[1]));
         }
 
         return meetingRepository.save(meeting);

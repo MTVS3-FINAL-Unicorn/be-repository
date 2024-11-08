@@ -30,8 +30,8 @@ public class Meeting {
     private LocalDate meetingDate;
     private LocalTime meetingTimeStart;
     private LocalTime meetingTimeEnd;
-    private LocalDateTime recruitmentPeriodStart;
-    private LocalDateTime recruitmentPeriodEnd;
+    private LocalDate recruitmentPeriodStart;
+    private LocalDate recruitmentPeriodEnd;
     private String extraConditions;
     private Long corpId;
     private boolean hasDeleted = false;
@@ -56,7 +56,7 @@ public class Meeting {
     }
 
     public void updateExpirationStatus() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         this.isExpired = recruitmentPeriodEnd != null && recruitmentPeriodEnd.isBefore(now);
     }
 }
