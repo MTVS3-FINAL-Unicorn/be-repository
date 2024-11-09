@@ -24,5 +24,10 @@ public class SurveyController {
         return ResponseEntity.ok(question);
     }
 
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity<Question> getQuestion(@PathVariable("questionId") Long questionId) {
+        Question question = questionService.getQuestion(questionId);
+        return ResponseEntity.ok(question);
+    }
 
 }
