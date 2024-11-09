@@ -27,4 +27,8 @@ public class AnswerService {
     private String convertAudioToText(byte[] audioData) {
         return "Converted text from audio";
     }
+
+    public void handlePreferenceResponse(Long questionId, Long userId, String selectedOption) {
+        saveAnswer(questionId, userId, selectedOption);
+    }
 }
