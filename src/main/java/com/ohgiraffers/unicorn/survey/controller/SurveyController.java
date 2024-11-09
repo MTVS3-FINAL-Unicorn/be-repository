@@ -8,6 +8,9 @@ import com.ohgiraffers.unicorn.survey.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
@@ -44,5 +47,15 @@ public class SurveyController {
         Long indivId = getCurrentUserId();
         Answer answer = answerService.saveAnswer(questionId, indivId, content);
         return ResponseEntity.ok(answer);
+    }
+
+    @PostMapping("/answers/voice")
+    public ResponseEntity<?> saveVoiceAnswer(
+            @RequestParam Long questionId,
+            @RequestParam Long userId,
+            @RequestParam MultipartFile audioFile) throws IOException {
+        byte[] audioData = audioFile.getBytes();
+        answerService.handleVoiceResponse(questionId, userId, audioData);
+        return ResponseEntity.ok("Voice response processed");
     }
 }
