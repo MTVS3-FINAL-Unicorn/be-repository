@@ -22,4 +22,8 @@ public class QuestionService {
 
         return questionRepository.save(question);
     }
+
+    public Question getQuestion(Long questionId) {
+        return questionRepository.findById(questionId).orElse(null);
+    }
 }
