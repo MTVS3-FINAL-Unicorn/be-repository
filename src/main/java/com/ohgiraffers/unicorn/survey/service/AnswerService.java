@@ -18,4 +18,13 @@ public class AnswerService {
         answer.setContent(content);
         return answerRepository.save(answer);
     }
+
+    public void handleVoiceResponse(Long questionId, Long userId, byte[] audioData) {
+        String textContent = convertAudioToText(audioData);
+        saveAnswer(questionId, userId, textContent);
+    }
+
+    private String convertAudioToText(byte[] audioData) {
+        return "Converted text from audio";
+    }
 }
