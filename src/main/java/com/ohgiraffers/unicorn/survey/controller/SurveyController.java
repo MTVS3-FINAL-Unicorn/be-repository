@@ -42,8 +42,8 @@ public class SurveyController {
 
     @PostMapping("/answers/text")
     public ResponseEntity<Answer> saveTextAnswer(
-            @RequestParam Long questionId,
-            @RequestParam String content) {
+            @RequestParam("questionID") Long questionId,
+            @RequestParam("content") String content) {
         Long indivId = getCurrentUserId();
         Answer answer = answerService.saveAnswer(questionId, indivId, content);
         return ResponseEntity.ok(answer);
@@ -51,11 +51,21 @@ public class SurveyController {
 
     @PostMapping("/answers/voice")
     public ResponseEntity<?> saveVoiceAnswer(
-            @RequestParam Long questionId,
-            @RequestParam Long userId,
-            @RequestParam MultipartFile audioFile) throws IOException {
+            @RequestParam("questionId") Long questionId,
+            @RequestParam("userId") Long userId,
+            @RequestParam("audioFile") MultipartFile audioFile) throws IOException {
         byte[] audioData = audioFile.getBytes();
         answerService.handleVoiceResponse(questionId, userId, audioData);
         return ResponseEntity.ok("Voice response processed");
+    }
+
+
+    @PostMapping("/answers/preference")
+    public ResponseEntity<?> savePreferenceAnswer(
+            @RequestParam("questionId") Long questionId,
+            @RequestParam("userId") Long userId,
+            @RequestParam("selectedOption") String selectedOption) {
+        answerService.handlePreferenceResponse(questionId, userId, selectedOption);
+        return ResponseEntity.ok("Preference response saved");
     }
 }
