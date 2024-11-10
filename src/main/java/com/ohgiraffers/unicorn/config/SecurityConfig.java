@@ -51,7 +51,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/indiv/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**")
+                .securityMatcher("/api/v1/auth/indiv/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**", "/api/v1/survey/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
