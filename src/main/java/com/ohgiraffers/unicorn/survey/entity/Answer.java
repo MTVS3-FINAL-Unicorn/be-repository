@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Answer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
@@ -15,10 +16,9 @@ public class Answer {
     private Long indivId;
     private String content;
 
-    public Answer(){}
+    public Answer() {}
 
-    public Answer(Long answerId, Long questionId, Long indivId, String content) {
-        this.answerId = answerId;
+    public Answer(Long questionId, Long indivId, String content) {
         this.questionId = questionId;
         this.indivId = indivId;
         this.content = content;
