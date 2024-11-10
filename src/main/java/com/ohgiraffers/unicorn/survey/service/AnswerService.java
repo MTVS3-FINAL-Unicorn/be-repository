@@ -19,16 +19,18 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
-    public void handleVoiceResponse(Long questionId, Long userId, byte[] audioData) {
+    public Answer handleVoiceResponse(Long questionId, Long indivId, byte[] audioData) {
         String textContent = convertAudioToText(audioData);
-        saveAnswer(questionId, userId, textContent);
+        Answer answer = saveAnswer(questionId, indivId, textContent);
+        return answer;
     }
 
     private String convertAudioToText(byte[] audioData) {
         return "Converted text from audio";
     }
 
-    public void handlePreferenceResponse(Long questionId, Long userId, String selectedOption) {
-        saveAnswer(questionId, userId, selectedOption);
+    public Answer handlePreferenceResponse(Long questionId, Long indivId, String selectedOption) {
+        Answer answer = saveAnswer(questionId, indivId, selectedOption);
+        return answer;
     }
 }
