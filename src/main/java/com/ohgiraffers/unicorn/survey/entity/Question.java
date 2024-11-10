@@ -1,6 +1,7 @@
 package com.ohgiraffers.unicorn.survey.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Question {
@@ -15,10 +16,21 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private QuestionType type;
 
-    public Question(){};
+    // Only applicable for PREFERENCE questions, stores URLs of image options
+    @ElementCollection
+    private List<String> options;
 
-    public Question(Long questionId, Long meetingId, String content, QuestionType type) {
+    public Question() {}
+
+    public Question(Long questionId, Long meetingId, String content, QuestionType type, List<String> options) {
         this.questionId = questionId;
+        this.meetingId = meetingId;
+        this.content = content;
+        this.type = type;
+        this.options = options;
+    }
+
+    public Question(Long meetingId, String content, QuestionType type) {
         this.meetingId = meetingId;
         this.content = content;
         this.type = type;
@@ -40,6 +52,10 @@ public class Question {
         return type;
     }
 
+    public List<String> getOptions() {
+        return options;
+    }
+
     public void setMeetingId(Long meetingId) {
         this.meetingId = meetingId;
     }
@@ -50,5 +66,9 @@ public class Question {
 
     public void setType(QuestionType type) {
         this.type = type;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
     }
 }
