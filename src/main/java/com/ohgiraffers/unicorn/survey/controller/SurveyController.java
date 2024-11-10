@@ -1,5 +1,7 @@
 package com.ohgiraffers.unicorn.survey.controller;
 
+import com.ohgiraffers.unicorn.survey.dto.AnswerDTO;
+import com.ohgiraffers.unicorn.survey.dto.PreferenceAnswerDTO;
 import com.ohgiraffers.unicorn.survey.dto.QuestionDTO;
 import com.ohgiraffers.unicorn.survey.entity.Answer;
 import com.ohgiraffers.unicorn.survey.entity.Question;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
@@ -24,6 +27,7 @@ public class SurveyController {
     @Autowired
     private AnswerService answerService;
 
+
     @PostMapping("/question")
     public ResponseEntity<Question> createQuestion(@RequestBody QuestionDTO questionRequest) {
         Question question = questionService.createQuestion(
@@ -31,6 +35,20 @@ public class SurveyController {
                 questionRequest.getContent(),
                 questionRequest.getType()
         );
+        return ResponseEntity.ok(question);
+    }
+
+    @PostMapping(value = "/question/preference", consumes = "multipart/form-data")
+    public ResponseEntity<Question> createPreferenceQuestion(
+            @ModelAttribute QuestionDTO questionRequest,
+            @RequestParam(name = "images", required = false) List<MultipartFile> images) throws IOException {
+
+        Question question = questionService.createPreferenceQuestion(
+                questionRequest.getMeetingId(),
+                questionRequest.getContent(),
+                questionRequest.getType(),
+                images);
+
         return ResponseEntity.ok(question);
     }
 
@@ -42,30 +60,31 @@ public class SurveyController {
 
     @PostMapping("/answers/text")
     public ResponseEntity<Answer> saveTextAnswer(
-            @RequestParam("questionID") Long questionId,
-            @RequestParam("content") String content) {
+            @RequestBody AnswerDTO answerRequest) {
         Long indivId = getCurrentUserId();
-        Answer answer = answerService.saveAnswer(questionId, indivId, content);
+        Answer answer = answerService.saveAnswer(
+                answerRequest.getQuestionId(),
+                indivId,
+                answerRequest.getContent());
         return ResponseEntity.ok(answer);
     }
 
-    @PostMapping("/answers/voice")
+    @PostMapping(value = "/answers/voice", consumes = "multipart/form-data")
     public ResponseEntity<?> saveVoiceAnswer(
             @RequestParam("questionId") Long questionId,
-            @RequestParam("userId") Long userId,
             @RequestParam("audioFile") MultipartFile audioFile) throws IOException {
+        Long indivId = getCurrentUserId();
         byte[] audioData = audioFile.getBytes();
-        answerService.handleVoiceResponse(questionId, userId, audioData);
-        return ResponseEntity.ok("Voice response processed");
+        Answer answer = answerService.handleVoiceResponse(questionId, indivId, audioData);
+        return ResponseEntity.ok(answer);
     }
-
 
     @PostMapping("/answers/preference")
     public ResponseEntity<?> savePreferenceAnswer(
-            @RequestParam("questionId") Long questionId,
-            @RequestParam("userId") Long userId,
-            @RequestParam("selectedOption") String selectedOption) {
-        answerService.handlePreferenceResponse(questionId, userId, selectedOption);
-        return ResponseEntity.ok("Preference response saved");
+            @RequestBody PreferenceAnswerDTO preferenceAnswerDTO) {
+        Long indivId = getCurrentUserId();
+        Answer answer = answerService.handlePreferenceResponse(preferenceAnswerDTO.getQuestionId(), indivId, preferenceAnswerDTO.getSelectedOption());
+        return ResponseEntity.ok(answer);
     }
+
 }
