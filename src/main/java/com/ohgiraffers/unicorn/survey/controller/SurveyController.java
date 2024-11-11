@@ -42,7 +42,7 @@ public class SurveyController {
 
     @PostMapping("/answers/text")
     public ResponseEntity<Answer> saveTextAnswer(
-            @RequestParam("questionID") Long questionId,
+            @RequestParam("questionId") Long questionId,
             @RequestParam("content") String content) {
         Long indivId = getCurrentUserId();
         Answer answer = answerService.saveAnswer(questionId, indivId, content);
