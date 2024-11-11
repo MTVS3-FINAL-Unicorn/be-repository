@@ -57,7 +57,7 @@ public class IndivService {
                 authTokenDTO.accessTokenValidTime(),
                 indiv.getId(),
                 indiv.getName(),
-                indiv.getBirthDate().toString(),
+                indiv.getNickname(),
                 indiv.getContact(),
                 indiv.getCategoryId(),
                 age
