@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.openfeign.dto;
+package com.ohgiraffers.unicorn.ad.dto;
 
 import lombok.Getter;
 

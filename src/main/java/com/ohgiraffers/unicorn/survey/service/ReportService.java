@@ -1,9 +1,17 @@
 package com.ohgiraffers.unicorn.survey.service;
 
-import com.ohgiraffers.unicorn.openfeign.client.ReportClient;
-import com.ohgiraffers.unicorn.openfeign.dto.*;
+import com.ohgiraffers.unicorn.survey.client.ReportClient;
+import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
+import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
+import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
+import com.ohgiraffers.unicorn.survey.dto.VoiceRequestDTO;
+import com.ohgiraffers.unicorn.survey.entity.Answer;
+import com.ohgiraffers.unicorn.survey.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -11,43 +19,52 @@ public class ReportService {
     @Autowired
     private ReportClient reportClient;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    public void submitTextAnswerToAI(Answer answer) {
+        TextRequestDTO request = new TextRequestDTO(answer.getQuestionId(), answer.getIndivId(),answer.getContent());
+        reportClient.submitTextAnswer(request);
+    }
+
+    public void submitVoiceAnswerToAI(Answer answer, byte[] audioData) {
+        VoiceRequestDTO request = new VoiceRequestDTO(answer.getQuestionId(), answer.getIndivId(), audioData);
+        reportClient.submitVoiceAnswer(request);
+    }
+
     public String generateOverallReport(Long corpId, Long meetingId) {
-        OverallRequestDTO request = new OverallRequestDTO();
-        request.setCorpId(corpId);
-        request.setMeetingId(meetingId);
+        OverallAnalysisRequestDTO request = new OverallAnalysisRequestDTO(corpId, meetingId);
         return reportClient.analyzeOverallResponses(request);
     }
 
-    public String analyzeTopic(Long corpId, Long meetingId, Long topicId, Long questionId) {
-        TopicRequestDTO request = new TopicRequestDTO();
-        request.setCorpId(corpId);
-        request.setMeetingId(meetingId);
-        request.setTopicId(topicId);
-        request.setQuestionId(questionId);
+    private EachAnalysisRequestDTO buildEachAnalysisRequestDTO(List<Answer> answers) {
+        List<EachAnalysisRequestDTO.Response> responses = answers.stream()
+                .map(answer -> new EachAnalysisRequestDTO.Response(
+                        answer.getIndivId(),
+                        answer.getMeetingId(),
+                        answer.getQuestionId(),
+                        answer.getContent()))
+                .collect(Collectors.toList());
+        return new EachAnalysisRequestDTO(responses);
+    }
+
+    public String analyzeTopic(List<Answer> answers) {
+        EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
         return reportClient.analyzeTopic(request);
     }
 
-    public String analyzeEmbedding(Long corpId, Long meetingId, Long questionId) {
-        EmbeddingRequestDTO request = new EmbeddingRequestDTO();
-        request.setCorpId(corpId);
-        request.setMeetingId(meetingId);
-        request.setQuestionId(questionId);
+    public String analyzeEmbedding(List<Answer> answers) {
+        EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
         return reportClient.analyzeEmbedding(request);
     }
 
-    public String generateWordcloud(Long corpId, Long meetingId, Long questionId) {
-        WordcloudRequestDTO request = new WordcloudRequestDTO();
-        request.setCorpId(corpId);
-        request.setMeetingId(meetingId);
-        request.setQuestionId(questionId);
+    public String generateWordcloud(List<Answer> answers) {
+        EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
         return reportClient.generateWordcloud(request);
     }
 
-    public String analyzeSentiment(Long corpId, Long meetingId, Long questionId) {
-        SentimentRequestDTO request = new SentimentRequestDTO();
-        request.setCorpId(corpId);
-        request.setMeetingId(meetingId);
-        request.setQuestionId(questionId);
+    public String analyzeSentiment(List<Answer> answers) {
+        EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
         return reportClient.analyzeSentiment(request);
     }
 }
