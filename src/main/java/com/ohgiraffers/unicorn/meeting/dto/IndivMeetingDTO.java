@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class IndivMeetingDTO {
+    private String brandName;
     private Long meetingId;
     private String meetingTitle;
     private List<String> participantGender;
