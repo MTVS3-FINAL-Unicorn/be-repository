@@ -8,7 +8,7 @@ import com.ohgiraffers.unicorn.survey.entity.Question;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.service.AnswerService;
 import com.ohgiraffers.unicorn.survey.service.QuestionService;
-import com.ohgiraffers.unicorn.survey.service.ReportService;
+import com.ohgiraffers.unicorn.survey.service.GenerateReportByAIService;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class SurveyController {
     private AnswerService answerService;
 
     @Autowired
-    private ReportService reportService;
+    private GenerateReportByAIService generateReportByAIService;
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -70,7 +70,7 @@ public class SurveyController {
         );
 
         // 개별 텍스트 응답을 AI 서버에 전송
-        reportService.submitTextAnswerToAI(answer);
+        generateReportByAIService.submitTextAnswerToAI(answer);
 
         return ResponseEntity.ok(answer);
     }
@@ -97,7 +97,7 @@ public class SurveyController {
     @PostMapping("/complete/{meetingId}")
     public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
         // 전체 설문이 완료된 경우 AI 서버에 분석 요청
-        String overallReport = reportService.generateOverallReport(getCurrentUserId() ,meetingId);
+        String overallReport = generateReportByAIService.generateOverallReport(getCurrentUserId() ,meetingId);
         return ResponseEntity.ok(overallReport);
     }
 
@@ -107,10 +107,10 @@ public class SurveyController {
         List<Answer> answers = answerRepository.findByQuestionId(questionId);
 
         // 특정 문항에 대한 개별 분석 요청 (토픽, 임베딩 벡터, 워드클라우드, 감정 분석)
-        String topicAnalysis = reportService.analyzeTopic(answers);
-        String embeddingAnalysis = reportService.analyzeEmbedding(answers);
-        String wordcloud = reportService.generateWordcloud(answers);
-        String sentimentAnalysis = reportService.analyzeSentiment(answers);
+        String topicAnalysis = generateReportByAIService.analyzeTopic(answers);
+        String embeddingAnalysis = generateReportByAIService.analyzeEmbedding(answers);
+        String wordcloud = generateReportByAIService.generateWordcloud(answers);
+        String sentimentAnalysis = generateReportByAIService.analyzeSentiment(answers);
 
         return ResponseEntity.ok(
                 "Topic: " + topicAnalysis

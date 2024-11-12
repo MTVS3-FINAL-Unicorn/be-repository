@@ -1,4 +1,4 @@
-package report.controller;
+package com.ohgiraffers.unicorn.report.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;

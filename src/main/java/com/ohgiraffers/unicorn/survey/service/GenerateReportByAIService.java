@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ReportService {
+public class GenerateReportByAIService {
 
     @Autowired
     private ReportClient reportClient;

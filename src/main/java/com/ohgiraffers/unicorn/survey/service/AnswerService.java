@@ -18,7 +18,7 @@ public class AnswerService {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
-    private ReportService reportService;
+    private GenerateReportByAIService generateReportByAIService;
 
     public Answer saveAnswer(Long questionId, Long indivId, String content) {
         Answer answer = new Answer();
@@ -34,7 +34,7 @@ public class AnswerService {
 
         Answer answer = new Answer(questionId, indivId, encodedAudio);
 
-        String aiResponse = reportService.submitVoiceAnswerToAI(answer, encodedAudio);
+        String aiResponse = generateReportByAIService.submitVoiceAnswerToAI(answer, encodedAudio);
 
         JSONObject jsonResponse = new JSONObject(aiResponse);
         String content = jsonResponse.optString("data", "");
