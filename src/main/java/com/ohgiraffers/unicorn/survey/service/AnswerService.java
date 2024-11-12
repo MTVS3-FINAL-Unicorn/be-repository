@@ -3,8 +3,12 @@ package com.ohgiraffers.unicorn.survey.service;
 import com.ohgiraffers.unicorn.survey.entity.Answer;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.repository.QuestionRepository;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Base64;
 
 @Service
 public class AnswerService {
@@ -13,6 +17,8 @@ public class AnswerService {
     private AnswerRepository answerRepository;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private ReportService reportService;
 
     public Answer saveAnswer(Long questionId, Long indivId, String content) {
         Answer answer = new Answer();
@@ -23,14 +29,19 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
-    public Answer handleVoiceResponse(Long questionId, Long indivId, byte[] audioData) {
-        String textContent = convertAudioToText(audioData);
-        Answer answer = saveAnswer(questionId, indivId, textContent);
-        return answer;
-    }
+    public Answer handleVoiceResponse(Long questionId, Long indivId, byte[] audioData) throws JSONException {
+        String encodedAudio = Base64.getEncoder().encodeToString(audioData);
 
-    private String convertAudioToText(byte[] audioData) {
-        return "Converted text from audio";
+        Answer answer = new Answer(questionId, indivId, encodedAudio);
+
+        String aiResponse = reportService.submitVoiceAnswerToAI(answer, encodedAudio);
+
+        JSONObject jsonResponse = new JSONObject(aiResponse);
+        String content = jsonResponse.optString("data", "");
+
+        answer = saveAnswer(questionId, indivId, content);
+
+        return answer;
     }
 
     public Answer handlePreferenceResponse(Long questionId, Long indivId, String selectedOption) {

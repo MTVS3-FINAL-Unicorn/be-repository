@@ -9,6 +9,7 @@ import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.service.AnswerService;
 import com.ohgiraffers.unicorn.survey.service.QuestionService;
 import com.ohgiraffers.unicorn.survey.service.ReportService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,13 +78,11 @@ public class SurveyController {
     @PostMapping(value = "/answers/voice", consumes = "multipart/form-data")
     public ResponseEntity<?> saveVoiceAnswer(
             @RequestParam("questionId") Long questionId,
-            @RequestParam("audioFile") MultipartFile audioFile) throws IOException {
+            @RequestParam("audioFile") MultipartFile audioFile) throws IOException, JSONException {
         Long indivId = getCurrentUserId();
         byte[] audioData = audioFile.getBytes();
-        Answer answer = answerService.handleVoiceResponse(questionId, indivId, audioData);
 
-        // 개별 음성 응답을 AI 서버에 전송
-        reportService.submitVoiceAnswerToAI(answer, audioData);
+        Answer answer = answerService.handleVoiceResponse(questionId, indivId, audioData);
 
         return ResponseEntity.ok(answer);
     }

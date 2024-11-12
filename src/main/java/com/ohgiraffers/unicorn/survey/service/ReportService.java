@@ -34,9 +34,12 @@ public class ReportService {
         reportClient.submitTextAnswer(request);
     }
 
-    public void submitVoiceAnswerToAI(Answer answer, byte[] audioData) {
-        VoiceRequestDTO request = new VoiceRequestDTO(answer.getQuestionId(), answer.getIndivId(), audioData);
-        reportClient.submitVoiceAnswer(request);
+    public String submitVoiceAnswerToAI(Answer answer, String encodedAudio) {
+        Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+        Long corpId = meetingRepository.findById(question.getMeetingId()).get().getCorpId();
+
+        VoiceRequestDTO request = new VoiceRequestDTO(question.getContent(), encodedAudio, answer.getIndivId(), question.getMeetingId(), corpId, answer.getQuestionId());
+        return reportClient.submitVoiceAnswer(request);
     }
 
     public String generateOverallReport(Long corpId, Long meetingId) {
