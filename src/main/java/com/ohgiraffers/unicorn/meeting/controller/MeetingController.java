@@ -46,6 +46,13 @@ public class MeetingController {
         return ResponseEntity.ok(meetings);
     }
 
+    @GetMapping("/corporate")
+    public ResponseEntity<List<MeetingDTO>> getMeetingsByCorpId() {
+        Long corpId = getCurrentUserId();
+        List<MeetingDTO> meetings = meetingService.getMeetingsByCorpId(corpId);
+        return ResponseEntity.ok(meetings);
+    }
+
     @PostMapping
     public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDTO meeting) {
         meeting.setCorpId(getCurrentUserId());
