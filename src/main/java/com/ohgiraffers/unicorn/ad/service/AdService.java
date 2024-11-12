@@ -2,6 +2,8 @@ package com.ohgiraffers.unicorn.ad.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.ohgiraffers.unicorn.ad.client.AdClient;
+import com.ohgiraffers.unicorn.ad.dto.AdRequestDTO;
 import com.ohgiraffers.unicorn.ad.entity.Ad;
 import com.ohgiraffers.unicorn.ad.repository.AdRepository;
 import org.slf4j.Logger;
@@ -27,6 +29,8 @@ public class AdService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Autowired
+    private AdClient adClient;
 
 
     // 광고 생성 또는 업데이트 메서드
@@ -38,15 +42,29 @@ public class AdService {
 
         if (existingAd.isPresent()) {
             Ad ad = existingAd.get();
+
             ad.setCorpId(corpId);
             ad.setFileUrl(fileUrl); // S3 이미지 파일 URL
             ad.setType(type);
             ad.setDescription(description);
             ad.setIsOpened(ad.getIsOpened());
 
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
+
             return adRepository.save(ad);
         } else {
             Ad ad = new Ad(corpId, fileUrl, type, description, isOpended);
+
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
+
             return adRepository.save(ad);
         }
     }
