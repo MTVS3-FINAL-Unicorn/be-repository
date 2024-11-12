@@ -9,6 +9,7 @@ import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.service.AnswerService;
 import com.ohgiraffers.unicorn.survey.service.QuestionService;
 import com.ohgiraffers.unicorn.survey.service.ReportService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,13 +78,11 @@ public class SurveyController {
     @PostMapping(value = "/answers/voice", consumes = "multipart/form-data")
     public ResponseEntity<?> saveVoiceAnswer(
             @RequestParam("questionId") Long questionId,
-            @RequestParam("audioFile") MultipartFile audioFile) throws IOException {
+            @RequestParam("audioFile") MultipartFile audioFile) throws IOException, JSONException {
         Long indivId = getCurrentUserId();
         byte[] audioData = audioFile.getBytes();
-        Answer answer = answerService.handleVoiceResponse(questionId, indivId, audioData);
 
-        // 개별 음성 응답을 AI 서버에 전송
-        reportService.submitVoiceAnswerToAI(answer, audioData);
+        Answer answer = answerService.handleVoiceResponse(questionId, indivId, audioData);
 
         return ResponseEntity.ok(answer);
     }
@@ -110,11 +109,15 @@ public class SurveyController {
         // 특정 문항에 대한 개별 분석 요청 (토픽, 임베딩 벡터, 워드클라우드, 감정 분석)
         String topicAnalysis = reportService.analyzeTopic(answers);
         String embeddingAnalysis = reportService.analyzeEmbedding(answers);
-        String wordcloud = reportService.generateWordcloud(answers);
+//        String wordcloud = reportService.generateWordcloud(answers);
         String sentimentAnalysis = reportService.analyzeSentiment(answers);
 
-        return ResponseEntity.ok("Topic: " + topicAnalysis + ", Embedding: " + embeddingAnalysis +
-                ", Wordcloud: " + wordcloud + ", Sentiment: " + sentimentAnalysis);
+        return ResponseEntity.ok(
+                "Topic: " + topicAnalysis
+                + ", Embedding: " + embeddingAnalysis +
+//                ", Wordcloud: " + wordcloud +
+                ", Sentiment: " + sentimentAnalysis
+        );
     }
 
 }

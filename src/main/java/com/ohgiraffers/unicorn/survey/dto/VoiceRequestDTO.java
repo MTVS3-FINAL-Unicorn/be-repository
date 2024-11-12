@@ -6,15 +6,18 @@ import lombok.Data;
 public class VoiceRequestDTO {
 
     private String surveyQuestion;
-    private byte[] voiceResponse;
+    private String voiceResponse;
     private Long userId;
     private Long meetingId;
     private Long corpId;
     private Long questionId;
 
-    public VoiceRequestDTO(Long questionId, Long indivId, byte[] audioData) {
-        this.questionId = questionId;
+    public VoiceRequestDTO(String content, String encodedAudio, Long indivId, Long meetingId, Long corpId, Long questionId) {
+        this.surveyQuestion = content;
+        this.voiceResponse = encodedAudio;
         this.userId = indivId;
-        this.voiceResponse = audioData;
+        this.meetingId = meetingId;
+        this.corpId = corpId;
+        this.questionId = questionId;
     }
 }

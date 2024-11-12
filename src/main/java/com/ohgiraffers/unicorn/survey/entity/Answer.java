@@ -26,6 +26,12 @@ public class Answer {
         this.content = content;
     }
 
+    public Answer(Long questionId, Long indivId, String textContent) {
+        this.questionId = questionId;
+        this.indivId = indivId;
+        this.content = textContent;
+    }
+
     public Long getAnswerId() {
         return answerId;
     }

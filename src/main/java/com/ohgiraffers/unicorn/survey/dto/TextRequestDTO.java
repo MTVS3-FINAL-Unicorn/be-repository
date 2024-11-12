@@ -12,9 +12,12 @@ public class TextRequestDTO {
     private Long corpId;
     private Long questionId;
 
-    public TextRequestDTO(Long questionId, Long indivId, String content) {
-        this.questionId = questionId;
-        this.textResponse = content;
+    public TextRequestDTO(String content, String content1, Long indivId, Long meetingId, Long corpId, Long questionId) {
+        this.surveyQuestion = content;
+        this.textResponse = content1;
         this.userId = indivId;
+        this.meetingId = meetingId;
+        this.corpId = corpId;
+        this.questionId = questionId;
     }
 }

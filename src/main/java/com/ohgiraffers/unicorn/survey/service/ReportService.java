@@ -1,11 +1,13 @@
 package com.ohgiraffers.unicorn.survey.service;
 
+import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.survey.client.ReportClient;
 import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.VoiceRequestDTO;
 import com.ohgiraffers.unicorn.survey.entity.Answer;
+import com.ohgiraffers.unicorn.survey.entity.Question;
 import com.ohgiraffers.unicorn.survey.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,19 +23,28 @@ public class ReportService {
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private MeetingRepository meetingRepository;
 
     public void submitTextAnswerToAI(Answer answer) {
-        TextRequestDTO request = new TextRequestDTO(answer.getQuestionId(), answer.getIndivId(),answer.getContent());
+        Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+        Long corpId = meetingRepository.findById(question.getMeetingId()).get().getCorpId();
+
+        TextRequestDTO request = new TextRequestDTO(question.getContent(), answer.getContent(), answer.getIndivId(), question.getMeetingId(), corpId, answer.getQuestionId());
         reportClient.submitTextAnswer(request);
     }
 
-    public void submitVoiceAnswerToAI(Answer answer, byte[] audioData) {
-        VoiceRequestDTO request = new VoiceRequestDTO(answer.getQuestionId(), answer.getIndivId(), audioData);
-        reportClient.submitVoiceAnswer(request);
+    public String submitVoiceAnswerToAI(Answer answer, String encodedAudio) {
+        Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+        Long corpId = meetingRepository.findById(question.getMeetingId()).get().getCorpId();
+
+        VoiceRequestDTO request = new VoiceRequestDTO(question.getContent(), encodedAudio, answer.getIndivId(), question.getMeetingId(), corpId, answer.getQuestionId());
+        return reportClient.submitVoiceAnswer(request);
     }
 
     public String generateOverallReport(Long corpId, Long meetingId) {
         OverallAnalysisRequestDTO request = new OverallAnalysisRequestDTO(corpId, meetingId);
+        System.out.println("Request DTO: " + request);
         return reportClient.analyzeOverallResponses(request);
     }
 
@@ -65,6 +76,7 @@ public class ReportService {
 
     public String analyzeSentiment(List<Answer> answers) {
         EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
+        request.setMostCommonK(10);
         return reportClient.analyzeSentiment(request);
     }
 }
