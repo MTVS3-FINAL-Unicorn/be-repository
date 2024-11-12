@@ -2,7 +2,9 @@ package com.ohgiraffers.unicorn.meeting.service;
 
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.auth.entity.Indiv;
+import com.ohgiraffers.unicorn.auth.repository.CorpRepository;
 import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
+import com.ohgiraffers.unicorn.auth.service.CorpService;
 import com.ohgiraffers.unicorn.meeting.dto.IndivMeetingDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
@@ -27,6 +29,8 @@ public class MeetingService {
     private MeetingRepository meetingRepository;
     @Autowired
     private IndivRepository indivRepository;
+    @Autowired
+    private CorpService corpService;
 
     public MeetingService(MeetingRepository meetingRepository) {
         this.meetingRepository = meetingRepository;
@@ -123,6 +127,9 @@ public class MeetingService {
 
     private IndivMeetingDTO convertToIndivDTO(Meeting meeting) {
         IndivMeetingDTO meetingDTO = new IndivMeetingDTO();
+        UserResponseDTO.CorpProfileDTO corp = corpService.getUserProfile(meeting.getCorpId());
+
+        meetingDTO.setBrandName(corp.brandName());
         meetingDTO.setMeetingId(meeting.getMeetingId());
         meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
         meetingDTO.setParticipantGender(meeting.getParticipantGender());
