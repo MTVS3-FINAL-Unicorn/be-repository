@@ -26,9 +26,10 @@ public class ReportResponseController {
 
     @PostMapping("/wordcloud")
     public ResponseEntity<String> handleWordcloudImageUpload(
-            @RequestParam("file") MultipartFile file,
+            @RequestParam("wordcloudFile") MultipartFile file,
             @RequestParam("meetingId") String meetingId) {
         try {
+            // Upload the file to S3 and return the S3 URL
             String s3Url = uploadFileToS3(file, meetingId);
             return ResponseEntity.ok(s3Url);
         } catch (IOException e) {
@@ -37,16 +38,19 @@ public class ReportResponseController {
         }
     }
 
-    public String uploadFileToS3(MultipartFile file, String meetingId) throws IOException {
+    private String uploadFileToS3(MultipartFile file, String meetingId) throws IOException {
         String folderName = "meeting/wordclouds/" + meetingId;
         String fileName = folderName + "/" + file.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
+        // Set metadata
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
 
+        // Upload file to S3
         amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+
         return fileUrl;
     }
 
