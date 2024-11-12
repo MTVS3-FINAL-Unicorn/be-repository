@@ -1,5 +1,6 @@
 package com.ohgiraffers.unicorn.survey.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.util.List;
@@ -8,15 +9,20 @@ import java.util.List;
 public class EachAnalysisRequestDTO {
     private List<Response> responses;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer mostCommonK;
+
     public EachAnalysisRequestDTO(List<Response> responses) {
         this.responses = responses;
     }
 
-    public List<Response> getResponses() {
-        return responses;
+    public void setMostCommonK(Integer mostCommonK) {
+        this.mostCommonK = mostCommonK;
     }
 
+    @Data
     public static class Response {
+
         private Long indivId;
         private Long meetingId;
         private Long questionId;
@@ -27,22 +33,6 @@ public class EachAnalysisRequestDTO {
             this.meetingId = meetingId;
             this.questionId = questionId;
             this.answer = answer;
-        }
-
-        public Long getIndivId() {
-            return indivId;
-        }
-
-        public Long getMeetingId() {
-            return meetingId;
-        }
-
-        public Long getQuestionId() {
-            return questionId;
-        }
-
-        public String getAnswer() {
-            return answer;
         }
     }
 }

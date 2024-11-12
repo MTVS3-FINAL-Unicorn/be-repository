@@ -34,6 +34,7 @@ public class ReportService {
 
     public String generateOverallReport(Long corpId, Long meetingId) {
         OverallAnalysisRequestDTO request = new OverallAnalysisRequestDTO(corpId, meetingId);
+        System.out.println("Request DTO: " + request);
         return reportClient.analyzeOverallResponses(request);
     }
 
@@ -65,6 +66,7 @@ public class ReportService {
 
     public String analyzeSentiment(List<Answer> answers) {
         EachAnalysisRequestDTO request = buildEachAnalysisRequestDTO(answers);
+        request.setMostCommonK(10);
         return reportClient.analyzeSentiment(request);
     }
 }

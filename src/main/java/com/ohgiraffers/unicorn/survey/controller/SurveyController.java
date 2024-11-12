@@ -110,11 +110,15 @@ public class SurveyController {
         // 특정 문항에 대한 개별 분석 요청 (토픽, 임베딩 벡터, 워드클라우드, 감정 분석)
         String topicAnalysis = reportService.analyzeTopic(answers);
         String embeddingAnalysis = reportService.analyzeEmbedding(answers);
-        String wordcloud = reportService.generateWordcloud(answers);
+//        String wordcloud = reportService.generateWordcloud(answers);
         String sentimentAnalysis = reportService.analyzeSentiment(answers);
 
-        return ResponseEntity.ok("Topic: " + topicAnalysis + ", Embedding: " + embeddingAnalysis +
-                ", Wordcloud: " + wordcloud + ", Sentiment: " + sentimentAnalysis);
+        return ResponseEntity.ok(
+                "Topic: " + topicAnalysis
+                + ", Embedding: " + embeddingAnalysis +
+//                ", Wordcloud: " + wordcloud +
+                ", Sentiment: " + sentimentAnalysis
+        );
     }
 
 }
