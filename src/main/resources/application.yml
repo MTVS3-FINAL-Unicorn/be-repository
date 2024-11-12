@@ -50,3 +50,10 @@ cloud:
 
 jwt:
   secret: ${JWT_SECRET}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 100000
+        readTimeout: 200000
