@@ -101,7 +101,7 @@ public class SurveyController {
         return ResponseEntity.ok(overallReport);
     }
 
-    @PostMapping("/report/analyze/{questionId}")
+    @PostMapping("/analyze/{questionId}")
     public ResponseEntity<?> analyzeQuestionResponses(@PathVariable("questionId") Long questionId) {
 
         List<Answer> answers = answerRepository.findByQuestionId(questionId);
@@ -114,9 +114,9 @@ public class SurveyController {
 
         return ResponseEntity.ok(
                 "Topic: " + topicAnalysis
-                + ", Embedding: " + embeddingAnalysis +
-                ", Wordcloud: " + wordcloud +
-                ", Sentiment: " + sentimentAnalysis
+                + ", \n Embedding: " + embeddingAnalysis +
+                ", \n Wordcloud: " + wordcloud +
+                ", \n Sentiment: " + sentimentAnalysis
         );
     }
 
