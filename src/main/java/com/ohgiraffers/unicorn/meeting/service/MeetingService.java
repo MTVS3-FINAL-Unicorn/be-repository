@@ -54,6 +54,13 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
+    public List<MeetingDTO> getMeetingsByCorpId(Long corpId) {
+        List<Meeting> meetings = meetingRepository.findByCorpId(corpId);
+        return meetings.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private MeetingDTO convertToDTOWithFilteredParticipants(Meeting meeting) {
         MeetingDTO meetingDTO = convertToDTO(meeting);
 
@@ -281,7 +288,6 @@ public class MeetingService {
         // 변경된 Meeting 객체를 저장하여 삭제된 참가자 정보 반영
         meetingRepository.save(meeting);
     }
-
     public List<UserResponseDTO.IndivProfileDTO> getMeetingParticipants(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
@@ -304,11 +310,12 @@ public class MeetingService {
                 ))
                 .collect(Collectors.toList());
     }
-    // 사용자 연령 계산
 
+    // 사용자 연령 계산
     private int calculateAge(LocalDate birthDate) {
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
+
     // 스케쥴 중복 여부 확인
 
     private boolean hasScheduleConflict(Meeting newMeeting, Long userId) {
@@ -365,6 +372,5 @@ public class MeetingService {
         participant.setStatus(ParticipantStatus.REJECTED);
         meetingRepository.save(meeting);
     }
-
 }
 
