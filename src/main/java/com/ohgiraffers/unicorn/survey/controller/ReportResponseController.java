@@ -26,11 +26,14 @@ public class ReportResponseController {
 
     @PostMapping("/wordcloud")
     public ResponseEntity<String> handleWordcloudImageUpload(
-            @RequestParam("wordcloudFile") MultipartFile file,
-            @RequestParam("meetingId") String meetingId) {
+            @RequestParam("meetingId") Long meetingId,
+            @RequestParam("wordcloudFile") MultipartFile file
+            ) {
+        System.out.println("requestFromAI =========== "+file.getOriginalFilename() + meetingId);
+
         try {
             // Upload the file to S3 and return the S3 URL
-            String s3Url = uploadFileToS3(file, meetingId);
+            String s3Url = uploadFileToS3(meetingId, file);
             return ResponseEntity.ok(s3Url);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -38,7 +41,7 @@ public class ReportResponseController {
         }
     }
 
-    private String uploadFileToS3(MultipartFile file, String meetingId) throws IOException {
+    private String uploadFileToS3(Long meetingId, MultipartFile file) throws IOException {
         String folderName = "meeting/wordclouds/" + meetingId;
         String fileName = folderName + "/" + file.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
