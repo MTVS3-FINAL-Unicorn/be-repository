@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.survey.controller;
+package report.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -29,7 +29,6 @@ public class ReportResponseController {
             @RequestParam("meetingId") Long meetingId,
             @RequestParam("wordcloudFile") MultipartFile file
             ) {
-        System.out.println("requestFromAI =========== "+file.getOriginalFilename() + meetingId);
 
         try {
             // Upload the file to S3 and return the S3 URL
