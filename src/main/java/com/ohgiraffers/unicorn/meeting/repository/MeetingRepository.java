@@ -12,4 +12,6 @@ import java.util.List;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     @Query("SELECT m FROM Meeting m JOIN m.participantStatus p WHERE p.userId = :userId")
     List<Meeting> findAllByParticipantUserId(@Param("userId") Long userId);
+
+    List<Meeting> findByCorpId(Long corpId);
 }

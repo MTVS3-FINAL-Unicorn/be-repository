@@ -3,6 +3,7 @@ package com.ohgiraffers.unicorn.meeting.service;
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.auth.entity.Indiv;
 import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
+import com.ohgiraffers.unicorn.meeting.dto.IndivMeetingDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.entity.ParticipantStatus;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +36,7 @@ public class MeetingService {
     public List<MeetingDTO> getAllMeetings() {
         return meetingRepository.findAll().stream()
                 .filter(meeting -> !meeting.isHasDeleted() && !meeting.isExpired())
-                .map(this::convertToDtoWithFilteredParticipants)
+                .map(this::convertToDTOWithFilteredParticipants)
                 .collect(Collectors.toList());
     }
 
@@ -42,11 +44,25 @@ public class MeetingService {
     public MeetingDTO getMeetingById(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found with id: " + meetingId));
-        return convertToDtoWithFilteredParticipants(meeting);
+        return convertToDTOWithFilteredParticipants(meeting);
     }
 
-    private MeetingDTO convertToDtoWithFilteredParticipants(Meeting meeting) {
-        MeetingDTO meetingDTO = convertToDto(meeting);
+    public List<IndivMeetingDTO> getMeetingsByIndivId(Long indivId) {
+        List<Meeting> meetings = meetingRepository.findAllByParticipantUserId(indivId);
+        return meetings.stream()
+                .map(this::convertToIndivDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<MeetingDTO> getMeetingsByCorpId(Long corpId) {
+        List<Meeting> meetings = meetingRepository.findByCorpId(corpId);
+        return meetings.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private MeetingDTO convertToDTOWithFilteredParticipants(Meeting meeting) {
+        MeetingDTO meetingDTO = convertToDTO(meeting);
 
         List<UserResponseDTO.IndivProfileDTO> filteredParticipants = meeting.getParticipantStatus().stream()
                 .filter(participant -> participant.getStatus() == ParticipantStatus.PENDING
@@ -69,8 +85,7 @@ public class MeetingService {
         return meetingDTO;
     }
 
-    // Meeting 엔티티를 MeetingDTO로 변환하는 메서드
-    private MeetingDTO convertToDto(Meeting meeting) {
+    private MeetingDTO convertToDTO(Meeting meeting) {
         MeetingDTO meetingDTO = new MeetingDTO();
         meetingDTO.setMeetingId(meeting.getMeetingId());
         meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
@@ -85,6 +100,43 @@ public class MeetingService {
                 meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
         meetingDTO.setExtraConditions(meeting.getExtraConditions());
         meetingDTO.setCorpId(meeting.getCorpId());
+
+        List<UserResponseDTO.IndivProfileDTO> participants = meeting.getParticipantStatus().stream()
+                .map(participant -> indivRepository.findById(participant.getUserId())
+                        .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                                indiv.getId(),
+                                indiv.getName(),
+                                indiv.getNickname(),
+                                calculateAge(indiv.getBirthDate()),
+                                indiv.getGender(),
+                                indiv.getContact(),
+                                indiv.getCategoryId()
+                        ))
+                        .orElse(null))
+                .filter(profile -> profile != null)
+                .collect(Collectors.toList());
+
+        meetingDTO.setParticipants(participants);
+
+        return meetingDTO;
+    }
+
+    private IndivMeetingDTO convertToIndivDTO(Meeting meeting) {
+        IndivMeetingDTO meetingDTO = new IndivMeetingDTO();
+        meetingDTO.setMeetingId(meeting.getMeetingId());
+        meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
+        meetingDTO.setParticipantGender(meeting.getParticipantGender());
+        meetingDTO.setParticipantAge(
+                meeting.getParticipantAgeStart() + " - " + meeting.getParticipantAgeEnd());
+        meetingDTO.setRewardType(meeting.getRewardType());
+        meetingDTO.setRewardPrice(meeting.getRewardPrice() != null ? meeting.getRewardPrice().toString() : null);
+        meetingDTO.setMeetingDate(meeting.getMeetingDate() != null ? meeting.getMeetingDate().toString() : null);
+        meetingDTO.setMeetingTime(meeting.getMeetingTimeStart() + " - " + meeting.getMeetingTimeEnd());
+        meetingDTO.setRecruitmentPeriod(
+                meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
+        meetingDTO.setExtraConditions(meeting.getExtraConditions());
+        meetingDTO.setCorpId(meeting.getCorpId());
+
         return meetingDTO;
     }
 
@@ -134,8 +186,8 @@ public class MeetingService {
     }
 
     @Transactional
-    public Meeting updateMeeting(Long meetingId, MeetingDTO meetingDTO) {
-        Meeting meeting = meetingRepository.findById(meetingId)
+    public Meeting updateMeeting(MeetingDTO meetingDTO) {
+        Meeting meeting = meetingRepository.findById(meetingDTO.getMeetingId())
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
         // 필드 업데이트
@@ -236,7 +288,6 @@ public class MeetingService {
         // 변경된 Meeting 객체를 저장하여 삭제된 참가자 정보 반영
         meetingRepository.save(meeting);
     }
-
     public List<UserResponseDTO.IndivProfileDTO> getMeetingParticipants(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
@@ -266,6 +317,7 @@ public class MeetingService {
     }
 
     // 스케쥴 중복 여부 확인
+
     private boolean hasScheduleConflict(Meeting newMeeting, Long userId) {
         List<Meeting> userMeetings = meetingRepository.findAllByParticipantUserId(userId);
 

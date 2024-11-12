@@ -1,6 +1,7 @@
 package com.ohgiraffers.unicorn.meeting.controller;
 
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
+import com.ohgiraffers.unicorn.meeting.dto.IndivMeetingDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
@@ -27,7 +28,6 @@ public class MeetingController {
     @GetMapping
     public ResponseEntity<List<MeetingDTO>> getAllMeetings() {
         List<MeetingDTO> meetings = meetingService.getAllMeetings();
-
         return ResponseEntity.ok(meetings);
     }
 
@@ -39,6 +39,20 @@ public class MeetingController {
         return ResponseEntity.ok(meeting);
     }
 
+    @GetMapping("/individual")
+    public ResponseEntity<List<IndivMeetingDTO>> getMeetingsByIndivId() {
+        Long indivId = getCurrentUserId();
+        List<IndivMeetingDTO> meetings = meetingService.getMeetingsByIndivId(indivId);
+        return ResponseEntity.ok(meetings);
+    }
+
+    @GetMapping("/corporate")
+    public ResponseEntity<List<MeetingDTO>> getMeetingsByCorpId() {
+        Long corpId = getCurrentUserId();
+        List<MeetingDTO> meetings = meetingService.getMeetingsByCorpId(corpId);
+        return ResponseEntity.ok(meetings);
+    }
+
     @PostMapping
     public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDTO meeting) {
         meeting.setCorpId(getCurrentUserId());
@@ -46,9 +60,10 @@ public class MeetingController {
         return ResponseEntity.status(201).body(createdMeeting);
     }
 
-    @PutMapping("/{meetingId}")
-    public ResponseEntity<Meeting> updateMeeting(@RequestBody MeetingDTO meetingDTO) {
-        Meeting updatedMeeting = meetingService.updateMeeting(getCurrentUserId(), meetingDTO);
+    @PutMapping
+    public ResponseEntity<Meeting> updateMeeting(
+            @RequestBody MeetingDTO meetingDTO) {
+        Meeting updatedMeeting = meetingService.updateMeeting(meetingDTO);
         return ResponseEntity.ok(updatedMeeting);
     }
 
