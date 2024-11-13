@@ -1,5 +1,6 @@
 package com.ohgiraffers.unicorn.survey.controller;
 
+import com.ohgiraffers.unicorn.report.service.ReportService;
 import com.ohgiraffers.unicorn.survey.dto.AnswerDTO;
 import com.ohgiraffers.unicorn.survey.dto.PreferenceAnswerDTO;
 import com.ohgiraffers.unicorn.survey.dto.QuestionDTO;
@@ -8,7 +9,6 @@ import com.ohgiraffers.unicorn.survey.entity.Question;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.service.AnswerService;
 import com.ohgiraffers.unicorn.survey.service.QuestionService;
-import com.ohgiraffers.unicorn.survey.service.GenerateReportByAIService;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class SurveyController {
     private AnswerService answerService;
 
     @Autowired
-    private GenerateReportByAIService generateReportByAIService;
+    private ReportService reportService;
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -70,7 +70,7 @@ public class SurveyController {
         );
 
         // 개별 텍스트 응답을 AI 서버에 전송
-        generateReportByAIService.submitTextAnswerToAI(answer);
+        reportService.submitTextAnswerToAI(answer);
 
         return ResponseEntity.ok(answer);
     }
@@ -92,32 +92,6 @@ public class SurveyController {
         Long indivId = getCurrentUserId();
         Answer answer = answerService.handlePreferenceResponse(preferenceAnswerDTO.getQuestionId(), indivId, preferenceAnswerDTO.getSelectedOption());
         return ResponseEntity.ok(answer);
-    }
-
-    @PostMapping("/complete/{meetingId}")
-    public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
-        // 전체 설문이 완료된 경우 AI 서버에 분석 요청
-        String overallReport = generateReportByAIService.generateOverallReport(getCurrentUserId() ,meetingId);
-        return ResponseEntity.ok(overallReport);
-    }
-
-    @PostMapping("/analyze/{questionId}")
-    public ResponseEntity<?> analyzeQuestionResponses(@PathVariable("questionId") Long questionId) {
-
-        List<Answer> answers = answerRepository.findByQuestionId(questionId);
-
-        // 특정 문항에 대한 개별 분석 요청 (토픽, 임베딩 벡터, 워드클라우드, 감정 분석)
-        String topicAnalysis = generateReportByAIService.analyzeTopic(answers);
-        String embeddingAnalysis = generateReportByAIService.analyzeEmbedding(answers);
-        String wordcloud = generateReportByAIService.generateWordcloud(answers);
-        String sentimentAnalysis = generateReportByAIService.analyzeSentiment(answers);
-
-        return ResponseEntity.ok(
-                "Topic: " + topicAnalysis
-                + ", \n Embedding: " + embeddingAnalysis +
-                ", \n Wordcloud: " + wordcloud +
-                ", \n Sentiment: " + sentimentAnalysis
-        );
     }
 
 }
