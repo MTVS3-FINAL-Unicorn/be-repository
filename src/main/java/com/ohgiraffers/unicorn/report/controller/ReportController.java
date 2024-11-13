@@ -3,6 +3,7 @@ package com.ohgiraffers.unicorn.report.controller;
 import com.ohgiraffers.unicorn.report.entity.Report;
 import com.ohgiraffers.unicorn.report.service.ReportService;
 import com.ohgiraffers.unicorn.survey.entity.Answer;
+import com.ohgiraffers.unicorn.survey.entity.Question;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,24 +23,30 @@ public class ReportController {
 
     @Autowired
     private AnswerRepository answerRepository;
+
     @Autowired
     private QuestionRepository questionRepository;
 
+    @GetMapping("/get-questions/{meetingId}")
+    public ResponseEntity<List<Question>> getQuestionsByMeetingId(@PathVariable("meetingId") Long meetingId) {
+        List<Question> questions = questionRepository.findByMeetingId(meetingId);
+        return ResponseEntity.ok(questions);
+    }
+
     @GetMapping("/{meetingId}")
-    public ResponseEntity<List<Report>> getReportsByMeetingId(@PathVariable Long meetingId) {
+    public ResponseEntity<List<Report>> getReportsByMeetingId(@PathVariable("meetingId") Long meetingId) {
         List<Report> reports = reportService.getReportsByMeetingId(meetingId);
         return ResponseEntity.ok(reports);
     }
 
-    @GetMapping("/{questionId}")
-    public ResponseEntity<List<Report>> getReportsByQuestionId(@PathVariable Long questionId) {
-        List<Report> reports = reportService.getReportsByMeetingId(questionId);
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity<List<Report>> getReportsByQuestionId(@PathVariable("questionId") Long questionId) {
+        List<Report> reports = reportService.getReportsByQuestionId(questionId);
         return ResponseEntity.ok(reports);
     }
 
     @PostMapping("/analyze/whole/{meetingId}")
     public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
-        // 전체 설문이 완료된 경우 AI 서버에 분석 요청
         String overallReport = reportService.generateOverallReport(getCurrentUserId() ,meetingId);
         return ResponseEntity.ok(overallReport);
     }
