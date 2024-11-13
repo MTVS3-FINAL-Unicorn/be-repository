@@ -2,7 +2,6 @@ package com.ohgiraffers.unicorn.meeting.service;
 
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.auth.entity.Indiv;
-import com.ohgiraffers.unicorn.auth.repository.CorpRepository;
 import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
 import com.ohgiraffers.unicorn.auth.service.CorpService;
 import com.ohgiraffers.unicorn.meeting.dto.IndivMeetingDTO;
@@ -15,11 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,19 +66,23 @@ public class MeetingService {
     private MeetingDTO convertToDTOWithFilteredParticipants(Meeting meeting) {
         MeetingDTO meetingDTO = convertToDTO(meeting);
 
-        List<UserResponseDTO.IndivProfileDTO> filteredParticipants = meeting.getParticipantStatus().stream()
+        List<UserResponseDTO.IndivProfileWithStatusDTO> filteredParticipants = meeting.getParticipantStatus().stream()
                 .filter(participant -> participant.getStatus() == ParticipantStatus.PENDING
                         || participant.getStatus() == ParticipantStatus.APPROVED)
                 .map(participant -> indivRepository.findById(participant.getUserId())
-                        .map(indiv -> new UserResponseDTO.IndivProfileDTO(
-                                indiv.getId(),
-                                indiv.getName(),
-                                indiv.getNickname(),
-                                calculateAge(indiv.getBirthDate()),
-                                indiv.getGender(),
-                                indiv.getContact(),
-                                indiv.getCategoryId()
-                        ))
+                        .map(indiv -> {
+                            UserResponseDTO.IndivProfileWithStatusDTO profile = new UserResponseDTO.IndivProfileWithStatusDTO(
+                                    indiv.getId(),
+                                    indiv.getName(),
+                                    indiv.getNickname(),
+                                    calculateAge(indiv.getBirthDate()),
+                                    indiv.getGender(),
+                                    indiv.getContact(),
+                                    indiv.getCategoryId(),
+                                    participant.getStatus()
+                            );
+                            return profile;
+                        })
                         .orElse(null))
                 .filter(profile -> profile != null)
                 .collect(Collectors.toList());
@@ -105,16 +107,17 @@ public class MeetingService {
         meetingDTO.setExtraConditions(meeting.getExtraConditions());
         meetingDTO.setCorpId(meeting.getCorpId());
 
-        List<UserResponseDTO.IndivProfileDTO> participants = meeting.getParticipantStatus().stream()
+        List<UserResponseDTO.IndivProfileWithStatusDTO> participants = meeting.getParticipantStatus().stream()
                 .map(participant -> indivRepository.findById(participant.getUserId())
-                        .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+                        .map(indiv -> new UserResponseDTO.IndivProfileWithStatusDTO(
                                 indiv.getId(),
                                 indiv.getName(),
                                 indiv.getNickname(),
                                 calculateAge(indiv.getBirthDate()),
                                 indiv.getGender(),
                                 indiv.getContact(),
-                                indiv.getCategoryId()
+                                indiv.getCategoryId(),
+                                participant.getStatus()
                         ))
                         .orElse(null))
                 .filter(profile -> profile != null)
@@ -295,25 +298,24 @@ public class MeetingService {
         // 변경된 Meeting 객체를 저장하여 삭제된 참가자 정보 반영
         meetingRepository.save(meeting);
     }
-    public List<UserResponseDTO.IndivProfileDTO> getMeetingParticipants(Long meetingId) {
+
+    public List<UserResponseDTO.IndivProfileWithStatusDTO> getMeetingParticipants(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new IllegalArgumentException("좌담회 정보를 찾을 수 없습니다."));
 
-        // Participant ID 리스트 추출
-        List<Long> participantIds = meeting.getParticipantStatus().stream()
-                .map(Meeting.Participant::getUserId)
-                .collect(Collectors.toList());
+        Map<Long, ParticipantStatus> participantStatusMap = meeting.getParticipantStatus().stream()
+                .collect(Collectors.toMap(Meeting.Participant::getUserId, Meeting.Participant::getStatus));
 
-        // 해당하는 모든 Indiv 엔티티 조회 후, IndivProfileDTO로 변환
-        return indivRepository.findAllById(participantIds).stream()
-                .map(indiv -> new UserResponseDTO.IndivProfileDTO(
+        return indivRepository.findAllById(participantStatusMap.keySet()).stream()
+                .map(indiv -> new UserResponseDTO.IndivProfileWithStatusDTO(
                         indiv.getId(),
                         indiv.getName(),
                         indiv.getNickname(),
                         calculateAge(indiv.getBirthDate()),
                         indiv.getGender(),
                         indiv.getContact(),
-                        indiv.getCategoryId()
+                        indiv.getCategoryId(),
+                        participantStatusMap.get(indiv.getId()) // Retrieve status from the map
                 ))
                 .collect(Collectors.toList());
     }
