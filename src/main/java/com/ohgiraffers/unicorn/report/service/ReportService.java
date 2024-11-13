@@ -149,7 +149,8 @@ public class ReportService {
         try {
             JsonNode root = objectMapper.readTree(response);
             String wordcloudFilename = root.path("wordcloud_filename").asText();
-            saveReportByQuestion(meetingId, questionId, AnalysisType.wordcloud, wordcloudFilename);
+            String wordcloudFileDownloadUrl = "https://bucat.s3.ap-northeast-2.amazonaws.com/" + wordcloudFilename;
+            saveReportByQuestion(meetingId, questionId, AnalysisType.wordcloud, wordcloudFileDownloadUrl);
         } catch (IOException e) {
             e.printStackTrace();
             return "워드클라우드 생성 결과 저장 중 오류가 발생했습니다.";
