@@ -34,7 +34,7 @@ public class MeetingController {
     @GetMapping("/{meetingId}")
     public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable("meetingId") Long meetingId) {
         MeetingDTO meeting = meetingService.getMeetingById(meetingId);
-        List<UserResponseDTO.IndivProfileDTO> participants = meetingService.getMeetingParticipants(meetingId);
+        List<UserResponseDTO.IndivProfileWithStatusDTO> participants = meetingService.getMeetingParticipants(meetingId);
         meeting.setParticipants(participants);
         return ResponseEntity.ok(meeting);
     }
