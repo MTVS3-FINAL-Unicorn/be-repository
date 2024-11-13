@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "report")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,12 +15,22 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
 
+    @Column
     private Long meetingId;
-    private String analysisType;
+
+    @Column(nullable = true)
+    private Long questionId;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private AnalysisType analysisType;
+
+    @Column(columnDefinition = "LONGTEXT")
     private String analysisResult;
 
-    public Report(Long meetingId, String analysisType, String analysisResult) {
+    public Report(Long meetingId, Long questionId, AnalysisType analysisType, String analysisResult) {
         this.meetingId = meetingId;
+        this.questionId = questionId;
         this.analysisType = analysisType;
         this.analysisResult = analysisResult;
     }
