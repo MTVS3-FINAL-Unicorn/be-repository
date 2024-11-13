@@ -45,6 +45,12 @@ public class ReportController {
         return ResponseEntity.ok(reports);
     }
 
+    @GetMapping("/answer/preference/{questionId}")
+    public ResponseEntity<List<Answer>> getPreferenceAnswersByQuestionId(@PathVariable("questionId") Long questionId) {
+        List<Answer> answers = answerRepository.findByQuestionId(questionId);
+        return ResponseEntity.ok(answers);
+    }
+
     @PostMapping("/analyze/whole/{meetingId}")
     public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
         String overallReport = reportService.generateOverallReport(getCurrentUserId() ,meetingId);
