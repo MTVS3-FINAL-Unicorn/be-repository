@@ -36,7 +36,11 @@ public class ReportService {
     private ObjectMapper objectMapper;
 
     public List<Report> getReportsByMeetingId(Long meetingId) {
-        return reportRepository.findByMeetingId(meetingId);
+        return reportRepository.findReportsByMeetingIdAndNullQuestionId(meetingId);
+    }
+
+    public List<Report> getReportsByQuestionId(Long questionId) {
+        return reportRepository.findByQuestionId(questionId);
     }
 
     public void submitTextAnswerToAI(Answer answer) {
