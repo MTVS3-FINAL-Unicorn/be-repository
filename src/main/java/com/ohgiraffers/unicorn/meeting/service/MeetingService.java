@@ -52,7 +52,7 @@ public class MeetingService {
     public List<IndivMeetingDTO> getMeetingsByIndivId(Long indivId) {
         List<Meeting> meetings = meetingRepository.findAllByParticipantUserId(indivId);
         return meetings.stream()
-                .map(this::convertToIndivDTO)
+                .map(meeting -> convertToIndivDTO(meeting, indivId)) // Pass both meeting and indivId
                 .collect(Collectors.toList());
     }
 
@@ -128,7 +128,7 @@ public class MeetingService {
         return meetingDTO;
     }
 
-    private IndivMeetingDTO convertToIndivDTO(Meeting meeting) {
+    private IndivMeetingDTO convertToIndivDTO(Meeting meeting, Long indivId) {
         IndivMeetingDTO meetingDTO = new IndivMeetingDTO();
         UserResponseDTO.CorpProfileDTO corp = corpService.getUserProfile(meeting.getCorpId());
 
@@ -136,16 +136,20 @@ public class MeetingService {
         meetingDTO.setMeetingId(meeting.getMeetingId());
         meetingDTO.setMeetingTitle(meeting.getMeetingTitle());
         meetingDTO.setParticipantGender(meeting.getParticipantGender());
-        meetingDTO.setParticipantAge(
-                meeting.getParticipantAgeStart() + " - " + meeting.getParticipantAgeEnd());
+        meetingDTO.setParticipantAge(meeting.getParticipantAgeStart() + " - " + meeting.getParticipantAgeEnd());
         meetingDTO.setRewardType(meeting.getRewardType());
         meetingDTO.setRewardPrice(meeting.getRewardPrice() != null ? meeting.getRewardPrice().toString() : null);
         meetingDTO.setMeetingDate(meeting.getMeetingDate() != null ? meeting.getMeetingDate().toString() : null);
         meetingDTO.setMeetingTime(meeting.getMeetingTimeStart() + " - " + meeting.getMeetingTimeEnd());
-        meetingDTO.setRecruitmentPeriod(
-                meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
+        meetingDTO.setRecruitmentPeriod(meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
         meetingDTO.setExtraConditions(meeting.getExtraConditions());
         meetingDTO.setCorpId(meeting.getCorpId());
+
+        // Find the participant's status for this individual
+        meeting.getParticipantStatus().stream()
+                .filter(participant -> participant.getUserId().equals(indivId))
+                .findFirst()
+                .ifPresent(participant -> meetingDTO.setStatus(participant.getStatus().toString()));
 
         return meetingDTO;
     }
