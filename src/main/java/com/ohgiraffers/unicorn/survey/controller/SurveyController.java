@@ -1,5 +1,6 @@
 package com.ohgiraffers.unicorn.survey.controller;
 
+import com.ohgiraffers.unicorn.report.service.ReportService;
 import com.ohgiraffers.unicorn.survey.dto.AnswerDTO;
 import com.ohgiraffers.unicorn.survey.dto.PreferenceAnswerDTO;
 import com.ohgiraffers.unicorn.survey.dto.QuestionDTO;
@@ -8,7 +9,6 @@ import com.ohgiraffers.unicorn.survey.entity.Question;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.service.AnswerService;
 import com.ohgiraffers.unicorn.survey.service.QuestionService;
-import com.ohgiraffers.unicorn.survey.service.ReportService;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -92,32 +92,6 @@ public class SurveyController {
         Long indivId = getCurrentUserId();
         Answer answer = answerService.handlePreferenceResponse(preferenceAnswerDTO.getQuestionId(), indivId, preferenceAnswerDTO.getSelectedOption());
         return ResponseEntity.ok(answer);
-    }
-
-    @PostMapping("/complete/{meetingId}")
-    public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
-        // 전체 설문이 완료된 경우 AI 서버에 분석 요청
-        String overallReport = reportService.generateOverallReport(getCurrentUserId() ,meetingId);
-        return ResponseEntity.ok(overallReport);
-    }
-
-    @PostMapping("/report/analyze/{questionId}")
-    public ResponseEntity<?> analyzeQuestionResponses(@PathVariable("questionId") Long questionId) {
-
-        List<Answer> answers = answerRepository.findByQuestionId(questionId);
-
-        // 특정 문항에 대한 개별 분석 요청 (토픽, 임베딩 벡터, 워드클라우드, 감정 분석)
-        String topicAnalysis = reportService.analyzeTopic(answers);
-        String embeddingAnalysis = reportService.analyzeEmbedding(answers);
-        String wordcloud = reportService.generateWordcloud(answers);
-        String sentimentAnalysis = reportService.analyzeSentiment(answers);
-
-        return ResponseEntity.ok(
-                "Topic: " + topicAnalysis
-                + ", Embedding: " + embeddingAnalysis +
-                ", Wordcloud: " + wordcloud +
-                ", Sentiment: " + sentimentAnalysis
-        );
     }
 
 }

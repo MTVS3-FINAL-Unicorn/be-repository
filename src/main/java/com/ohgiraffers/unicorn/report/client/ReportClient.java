@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.survey.client;
+package com.ohgiraffers.unicorn.report.client;
 
 import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
