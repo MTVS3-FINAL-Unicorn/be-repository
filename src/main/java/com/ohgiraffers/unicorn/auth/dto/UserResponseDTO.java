@@ -1,5 +1,7 @@
 package com.ohgiraffers.unicorn.auth.dto;
 
+import com.ohgiraffers.unicorn.meeting.entity.ParticipantStatus;
+
 import java.util.List;
 
 public class UserResponseDTO {
@@ -61,4 +63,15 @@ public class UserResponseDTO {
             List<Integer> categoryId
     ) {
     }
+
+    public record IndivProfileWithStatusDTO(
+            Long indivId,
+            String name,
+            String nickname,
+            int age,
+            String gender,
+            String contact,
+            List<Integer> categoryId,
+            ParticipantStatus status
+    ){ }
 }
