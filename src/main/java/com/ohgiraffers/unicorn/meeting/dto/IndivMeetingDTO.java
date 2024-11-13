@@ -18,7 +18,6 @@ public class IndivMeetingDTO {
     private String meetingTime;     // e.g., "15:00:00 - 17:00:00"
     private String recruitmentPeriod;  // e.g., "2024-10-31 - 2024-11-15"
     private String extraConditions;
-//    private String status;
     private Long corpId;
 }
 
