@@ -1,5 +1,6 @@
 package com.ohgiraffers.unicorn.survey.service;
 
+import com.ohgiraffers.unicorn.report.service.ReportService;
 import com.ohgiraffers.unicorn.survey.entity.Answer;
 import com.ohgiraffers.unicorn.survey.repository.AnswerRepository;
 import com.ohgiraffers.unicorn.survey.repository.QuestionRepository;
@@ -18,7 +19,7 @@ public class AnswerService {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
-    private GenerateReportByAIService generateReportByAIService;
+    private ReportService reportService;
 
     public Answer saveAnswer(Long questionId, Long indivId, String content) {
         Answer answer = new Answer();
@@ -34,7 +35,7 @@ public class AnswerService {
 
         Answer answer = new Answer(questionId, indivId, encodedAudio);
 
-        String aiResponse = generateReportByAIService.submitVoiceAnswerToAI(answer, encodedAudio);
+        String aiResponse = reportService.submitVoiceAnswerToAI(answer, encodedAudio);
 
         JSONObject jsonResponse = new JSONObject(aiResponse);
         String content = jsonResponse.optString("data", "");
