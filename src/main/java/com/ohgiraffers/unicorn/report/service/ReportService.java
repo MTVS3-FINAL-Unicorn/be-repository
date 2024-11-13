@@ -6,7 +6,7 @@ import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.report.entity.Report;
 import com.ohgiraffers.unicorn.report.entity.AnalysisType;
 import com.ohgiraffers.unicorn.report.repository.ReportRepository;
-import com.ohgiraffers.unicorn.survey.client.ReportClient;
+import com.ohgiraffers.unicorn.report.client.ReportClient;
 import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
