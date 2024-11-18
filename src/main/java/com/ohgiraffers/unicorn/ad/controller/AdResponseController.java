@@ -3,6 +3,8 @@ package com.ohgiraffers.unicorn.ad.controller;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ohgiraffers.unicorn.ad.dto.AdResponseDTO;
+import com.ohgiraffers.unicorn.ad.entity.Ad;
+import com.ohgiraffers.unicorn.ad.repository.AdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,15 @@ public class AdResponseController {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Autowired
+    private AdRepository adRepository;
 
     @PostMapping
     public ResponseEntity<String> handleAdVideoUpload(
-            @RequestBody AdResponseDTO adResponseDTO) {
+            @RequestParam("corpId") Long corpId,
+            @RequestParam("advertiseVideo") MultipartFile advertiseVideo) {
         try {
-            String s3Url = uploadFileToS3(adResponseDTO);
+            String s3Url = uploadFileToS3(corpId, advertiseVideo);
             return ResponseEntity.ok(s3Url);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -34,16 +39,21 @@ public class AdResponseController {
         }
     }
 
-    public String uploadFileToS3(AdResponseDTO adResponseDTO) throws IOException {
-        String folderName = "ad/" + adResponseDTO.getCorpId();
-        String fileName = folderName + "/" + adResponseDTO.getAdvertiseVideo().getOriginalFilename();
+    public String uploadFileToS3(Long corpId, MultipartFile advertiseVideo) throws IOException {
+        String folderName = "ad/" + corpId;
+        String fileName = folderName + "/video_" + advertiseVideo.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(adResponseDTO.getAdvertiseVideo().getContentType());
-        metadata.setContentLength(adResponseDTO.getAdvertiseVideo().getSize());
+        metadata.setContentType(advertiseVideo.getContentType());
+        metadata.setContentLength(advertiseVideo.getSize());
 
-        amazonS3Client.putObject(bucket, fileName, adResponseDTO.getAdvertiseVideo().getInputStream(), metadata);
+        amazonS3Client.putObject(bucket, fileName, advertiseVideo.getInputStream(), metadata);
+
+        adRepository.findByCorpId(corpId).ifPresent(ad1 -> {
+            ad1.setAdVideoUrl(fileUrl);
+        });
+
         return fileUrl;
     }
 

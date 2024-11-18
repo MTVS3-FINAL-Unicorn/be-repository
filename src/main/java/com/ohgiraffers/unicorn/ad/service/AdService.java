@@ -35,7 +35,7 @@ public class AdService {
 
     // 광고 생성 또는 업데이트 메서드
 
-    public Ad createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpended) {
+    public Ad createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
 
         // 기존 광고가 있는지 확인하여 생성 또는 업데이트
         Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
@@ -49,21 +49,21 @@ public class AdService {
             ad.setDescription(description);
             ad.setIsOpened(ad.getIsOpened());
 
-//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-//
-//            String response = adClient.generateVideoAd(requestDTO);
-//
-//            ad.setAdVideoUrl(response);
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
 
             return adRepository.save(ad);
         } else {
-            Ad ad = new Ad(corpId, fileUrl, type, description, isOpended);
-//
-//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-//
-//            String response = adClient.generateVideoAd(requestDTO);
-//
-//            ad.setAdVideoUrl(response);
+            Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
+
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
 
             return adRepository.save(ad);
         }
@@ -73,8 +73,8 @@ public class AdService {
     }
 
     // S3에 파일 업로드 메서드
-    public String uploadFileToS3(MultipartFile file, String folderName) throws IOException {
-        String fileName = folderName + "/" + file.getOriginalFilename(); // ad 폴더 경로 포함
+    public String uploadImageToS3(MultipartFile file, String folderName) throws IOException {
+        String fileName = folderName + "/image_" + file.getOriginalFilename(); // ad 폴더 경로 포함
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();
