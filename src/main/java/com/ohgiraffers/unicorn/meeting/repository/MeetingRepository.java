@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
@@ -14,4 +15,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     List<Meeting> findAllByParticipantUserId(@Param("userId") Long userId);
 
     List<Meeting> findByCorpId(Long corpId);
+
+    List<Meeting> findByCategoryId(Long categoryId);
 }
