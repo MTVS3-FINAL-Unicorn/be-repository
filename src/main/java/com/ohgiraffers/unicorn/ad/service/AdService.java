@@ -49,21 +49,21 @@ public class AdService {
             ad.setDescription(description);
             ad.setIsOpened(ad.getIsOpened());
 
-//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-//
-//            String response = adClient.generateVideoAd(requestDTO);
-//
-//            ad.setAdVideoUrl(response);
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
 
             return adRepository.save(ad);
         } else {
             Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
-//
-//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-//
-//            String response = adClient.generateVideoAd(requestDTO);
-//
-//            ad.setAdVideoUrl(response);
+
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
 
             return adRepository.save(ad);
         }
