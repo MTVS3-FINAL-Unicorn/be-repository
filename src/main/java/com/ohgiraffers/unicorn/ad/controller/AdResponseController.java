@@ -35,7 +35,7 @@ public class AdResponseController {
             return ResponseEntity.ok(s3Url);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload image to S3: " + e.getMessage());
+                    .body("Failed to upload video to S3: " + e.getMessage());
         }
     }
 
@@ -48,13 +48,16 @@ public class AdResponseController {
         metadata.setContentType(advertiseVideo.getContentType());
         metadata.setContentLength(advertiseVideo.getSize());
 
+        // S3에 파일 업로드
         amazonS3Client.putObject(bucket, fileName, advertiseVideo.getInputStream(), metadata);
 
-        adRepository.findByCorpId(corpId).ifPresent(ad1 -> {
-            ad1.setAdVideoUrl(fileUrl);
+        // 광고 데이터 업데이트
+        adRepository.findByCorpId(corpId).ifPresent(ad -> {
+            ad.setAdVideoUrl(fileUrl); // adVideoUrl 업데이트
+            adRepository.save(ad); // 변경 사항 저장
         });
 
         return fileUrl;
     }
-
 }
+
