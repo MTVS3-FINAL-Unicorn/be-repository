@@ -42,6 +42,13 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
+    public List<MeetingDTO> getMeetingsByCategoryId(Long categoryId) {
+        return meetingRepository.findByCategoryId(categoryId).stream()
+                .filter(meeting -> !meeting.isHasDeleted() && !meeting.isExpired())
+                .map(this::convertToDTOWithFilteredParticipants)
+                .collect(Collectors.toList());
+    }
+
     // 단일 조회 메서드
     public MeetingDTO getMeetingById(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -106,6 +113,7 @@ public class MeetingService {
                 meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
         meetingDTO.setExtraConditions(meeting.getExtraConditions());
         meetingDTO.setCorpId(meeting.getCorpId());
+        meetingDTO.setCategoryId(meeting.getCategoryId());
 
         List<UserResponseDTO.IndivProfileWithStatusDTO> participants = meeting.getParticipantStatus().stream()
                 .map(participant -> indivRepository.findById(participant.getUserId())
@@ -144,6 +152,7 @@ public class MeetingService {
         meetingDTO.setRecruitmentPeriod(meeting.getRecruitmentPeriodStart() + " - " + meeting.getRecruitmentPeriodEnd());
         meetingDTO.setExtraConditions(meeting.getExtraConditions());
         meetingDTO.setCorpId(meeting.getCorpId());
+        meetingDTO.setCategoryId(meeting.getCategoryId());
 
         // Find the participant's status for this individual
         meeting.getParticipantStatus().stream()
@@ -164,6 +173,7 @@ public class MeetingService {
         meeting.setRewardType(meetingDTO.getRewardType());
         meeting.setExtraConditions(meetingDTO.getExtraConditions());
         meeting.setCorpId(meetingDTO.getCorpId());
+        meeting.setCategoryId(meetingDTO.getCategoryId());
 
         // 연령대 범위 설정
         if (meetingDTO.getParticipantAge() != null) {
@@ -323,8 +333,8 @@ public class MeetingService {
                 ))
                 .collect(Collectors.toList());
     }
-
     // 사용자 연령 계산
+
     private int calculateAge(LocalDate birthDate) {
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
