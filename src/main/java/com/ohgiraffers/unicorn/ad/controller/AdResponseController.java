@@ -36,7 +36,7 @@ public class AdResponseController {
 
     public String uploadFileToS3(AdResponseDTO adResponseDTO) throws IOException {
         String folderName = "ad/" + adResponseDTO.getCorpId();
-        String fileName = folderName + "/" + adResponseDTO.getAdvertiseVideo().getOriginalFilename();
+        String fileName = folderName + "/video_" + adResponseDTO.getAdvertiseVideo().getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();

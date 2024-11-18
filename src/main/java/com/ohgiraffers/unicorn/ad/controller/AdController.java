@@ -38,7 +38,7 @@ public class AdController {
             }
 
             // 새 파일 업로드
-            String fileUrl = adService.uploadFileToS3(file, "ad");
+            String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
 
             // 광고 생성 또는 업데이트
             Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description,1);
