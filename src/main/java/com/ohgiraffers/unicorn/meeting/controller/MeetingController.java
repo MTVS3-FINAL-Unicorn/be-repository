@@ -1,6 +1,7 @@
 package com.ohgiraffers.unicorn.meeting.controller;
 
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
+import com.ohgiraffers.unicorn.auth.repository.CorpRepository;
 import com.ohgiraffers.unicorn.meeting.dto.IndivMeetingDTO;
 import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
@@ -24,6 +25,8 @@ public class MeetingController {
 
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private CorpRepository corpRepository;
 
     @GetMapping
     public ResponseEntity<List<MeetingDTO>> getAllMeetings() {
@@ -37,6 +40,12 @@ public class MeetingController {
         List<UserResponseDTO.IndivProfileWithStatusDTO> participants = meetingService.getMeetingParticipants(meetingId);
         meeting.setParticipants(participants);
         return ResponseEntity.ok(meeting);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<MeetingDTO>> getMeetingByCategory(@PathVariable("categoryId") Long categoryId) {
+        List<MeetingDTO> meetings = meetingService.getMeetingsByCategoryId(categoryId);
+        return ResponseEntity.ok(meetings);
     }
 
     @GetMapping("/individual")
@@ -56,6 +65,7 @@ public class MeetingController {
     @PostMapping
     public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDTO meeting) {
         meeting.setCorpId(getCurrentUserId());
+        meeting.setCategoryId(corpRepository.findById(getCurrentUserId()).get().getCategoryId());
         Meeting createdMeeting = meetingService.createMeeting(meeting);
         return ResponseEntity.status(201).body(createdMeeting);
     }
