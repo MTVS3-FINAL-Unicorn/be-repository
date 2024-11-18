@@ -38,10 +38,10 @@ public class AdController {
             }
 
             // 새 파일 업로드
-            String imgFileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
+            String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
 
             // 광고 생성 또는 업데이트
-            Ad ad = adService.createOrUpdateAd(description, corpId, type, file, imgFileUrl, 1);
+            Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description,1);
 
             return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
