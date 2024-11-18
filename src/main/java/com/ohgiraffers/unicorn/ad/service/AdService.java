@@ -35,7 +35,7 @@ public class AdService {
 
     // 광고 생성 또는 업데이트 메서드
 
-    public Ad createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
+    public Ad createOrUpdateAd(String description, Long corpId, String type, MultipartFile file, String imgFileUrl, int isOpened) {
 
         // 기존 광고가 있는지 확인하여 생성 또는 업데이트
         Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
@@ -44,24 +44,26 @@ public class AdService {
             Ad ad = existingAd.get();
 
             ad.setCorpId(corpId);
-            ad.setFileUrl(fileUrl); // S3 이미지 파일 URL
+            ad.setFileUrl(imgFileUrl); // S3 이미지 파일 URL
             ad.setType(type);
             ad.setDescription(description);
             ad.setIsOpened(ad.getIsOpened());
 
-            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, file);
 
-            String response = adClient.generateVideoAd(requestDTO);
+            String response = adClient.generateVideoAd(file, description, corpId, type);
+            System.out.println("###################"+response);
 
             ad.setAdVideoUrl(response);
 
             return adRepository.save(ad);
         } else {
-            Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
+            Ad ad = new Ad(corpId, imgFileUrl, type, description, isOpened);
 
-            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+//            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, file);
 
-            String response = adClient.generateVideoAd(requestDTO);
+            String response = adClient.generateVideoAd(file, description, corpId, type);
+            System.out.println("###################"+response);
 
             ad.setAdVideoUrl(response);
 

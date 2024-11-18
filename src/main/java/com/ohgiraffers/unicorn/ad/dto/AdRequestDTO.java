@@ -1,15 +1,16 @@
 package com.ohgiraffers.unicorn.ad.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AdRequestDTO {
     private String prompt;
     private Long corpId;
     private String ratioType;
-    private String imageFile;
-
-    public AdRequestDTO(String description, Long corpId, String type, String fileUrl) {
-        this.prompt = description;
-        this.corpId = corpId;
-        this.ratioType = type;
-        this.imageFile = fileUrl;
-    }
+    private MultipartFile image;
 }
