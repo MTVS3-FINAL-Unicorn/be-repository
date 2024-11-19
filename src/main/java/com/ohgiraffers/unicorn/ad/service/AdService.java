@@ -10,11 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdService {
@@ -34,8 +36,8 @@ public class AdService {
 
 
     // 광고 생성 또는 업데이트 메서드
-
-    public Ad createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
+    @Async
+    public CompletableFuture createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
 
         // 기존 광고가 있는지 확인하여 생성 또는 업데이트
         Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
@@ -55,7 +57,7 @@ public class AdService {
 
             ad.setAdVideoUrl(response);
 
-            return adRepository.save(ad);
+            return CompletableFuture.completedFuture(adRepository.save(ad));
         } else {
             Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
 
@@ -65,9 +67,10 @@ public class AdService {
 
             ad.setAdVideoUrl(response);
 
-            return adRepository.save(ad);
+            return CompletableFuture.completedFuture(adRepository.save(ad));
         }
     }
+
     public Optional<Ad> findAdByUserId(Long corpId) {
         return adRepository.findByCorpId(corpId);
     }
