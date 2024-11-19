@@ -34,6 +34,7 @@ public class Meeting {
     private LocalDate recruitmentPeriodEnd;
     private String extraConditions;
     private Long corpId;
+    private int categoryId;
     private boolean hasDeleted = false;
     private boolean isExpired = false;
 

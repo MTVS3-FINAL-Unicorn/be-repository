@@ -19,6 +19,7 @@ public class MeetingDTO {
     private String recruitmentPeriod;  // e.g., "2024-10-31 - 2024-11-15"
     private String extraConditions;
     private Long corpId;
+    private int categoryId;
     private List<UserResponseDTO.IndivProfileWithStatusDTO> participants;
 }
 
