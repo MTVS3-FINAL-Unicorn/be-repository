@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
 
@@ -41,11 +43,17 @@ public class AdController {
             String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
 
             // 광고 생성 또는 업데이트
-            Ad ad = adService.createOrUpdateAd(corpId, fileUrl, type, description,1);
+            CompletableFuture<Ad> futureAd = adService.createOrUpdateAd(corpId, fileUrl, type, description, 1);
+
+            Ad ad = futureAd.get(); // 비동기 결과를 동기적으로 기다림
 
             return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
             return ResponseEntity.ok().body(ApiUtils.error(e.getMessage()));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
