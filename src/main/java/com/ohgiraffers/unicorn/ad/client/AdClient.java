@@ -3,7 +3,6 @@ package com.ohgiraffers.unicorn.ad.client;
 import com.ohgiraffers.unicorn.ad.dto.AdRequestDTO;
 import com.ohgiraffers.unicorn.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
