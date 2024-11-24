@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name":  "221082200491.dkr.ecr.ap-northeast-2.amazonaws.com/meta_user_18:meta_user_18",
+    "Name":  "221082200491.dkr.ecr.ap-northeast-2.amazonaws.com/unicorn:unicorn",
     "Update": "true"
   },
   "Ports": [
