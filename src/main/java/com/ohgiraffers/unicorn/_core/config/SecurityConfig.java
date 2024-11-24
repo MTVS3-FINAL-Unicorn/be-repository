@@ -1,11 +1,11 @@
-package com.ohgiraffers.unicorn.config;
+package com.ohgiraffers.unicorn._core.config;
 
 import com.ohgiraffers.unicorn.error.exception.Exception401;
 import com.ohgiraffers.unicorn.error.exception.Exception403;
-import com.ohgiraffers.unicorn.jwt.JWTTokenFilter;
-import com.ohgiraffers.unicorn.jwt.JWTTokenProvider;
-import com.ohgiraffers.unicorn.utils.CustomCorpDetail;
-import com.ohgiraffers.unicorn.utils.CustomIndivDetail;
+import com.ohgiraffers.unicorn._core.jwt.JWTTokenFilter;
+import com.ohgiraffers.unicorn._core.jwt.JWTTokenProvider;
+import com.ohgiraffers.unicorn._core.utils.CustomCorpDetail;
+import com.ohgiraffers.unicorn._core.utils.CustomIndivDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +14,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

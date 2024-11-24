@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.config;
+package com.ohgiraffers.unicorn._core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

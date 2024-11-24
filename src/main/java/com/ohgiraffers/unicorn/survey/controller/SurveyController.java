@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
 @RequestMapping("/api/v1/survey")

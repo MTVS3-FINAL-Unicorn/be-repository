@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
 @RequestMapping("/api/v1/space")

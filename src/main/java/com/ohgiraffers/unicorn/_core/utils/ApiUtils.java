@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.utils;
+package com.ohgiraffers.unicorn._core.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

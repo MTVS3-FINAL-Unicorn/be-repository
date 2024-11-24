@@ -1,7 +1,7 @@
 package com.ohgiraffers.unicorn.error;
 
 import com.ohgiraffers.unicorn.error.exception.*;
-import com.ohgiraffers.unicorn.utils.ApiUtils;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

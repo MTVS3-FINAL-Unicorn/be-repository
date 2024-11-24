@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.config;
+package com.ohgiraffers.unicorn._core.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

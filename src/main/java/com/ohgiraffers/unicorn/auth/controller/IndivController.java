@@ -4,7 +4,7 @@ package com.ohgiraffers.unicorn.auth.controller;
 import com.ohgiraffers.unicorn.auth.dto.UserRequestDTO;
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
 import com.ohgiraffers.unicorn.auth.service.IndivService;
-import com.ohgiraffers.unicorn.utils.ApiUtils;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -2,7 +2,7 @@ package com.ohgiraffers.unicorn.ad.controller;
 
 import com.ohgiraffers.unicorn.ad.entity.Ad;
 import com.ohgiraffers.unicorn.ad.service.AdService;
-import com.ohgiraffers.unicorn.utils.ApiUtils;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
 @RequestMapping("/api/v1/ad")
