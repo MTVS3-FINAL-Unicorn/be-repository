@@ -39,8 +39,8 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: meta_user_18
-        IMAGE_TAG: meta_user_18
+        ECR_REPOSITORY: unicorn
+        IMAGE_TAG: unicorn
       run: |
         docker buildx build --platform=linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
