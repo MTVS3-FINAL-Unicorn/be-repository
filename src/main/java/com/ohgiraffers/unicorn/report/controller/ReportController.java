@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
 @RequestMapping("/api/v1/report")
@@ -53,8 +53,14 @@ public class ReportController {
 
     @PostMapping("/analyze/whole/{meetingId}")
     public ResponseEntity<?> completeSurvey(@PathVariable("meetingId") Long meetingId) {
-        String overallReport = reportService.generateOverallReport(getCurrentUserId() ,meetingId);
+        String overallReport = reportService.generateOverallReport(getCurrentUserId(), meetingId);
         return ResponseEntity.ok(overallReport);
+    }
+
+    @PostMapping("/generate-script/{meetingId}")
+    public ResponseEntity<?> generateScript(@PathVariable("meetingId") Long meetingId) {
+        String meetingScript = reportService.generateScript(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(meetingScript);
     }
 
     @PostMapping("/analyze/{meetingId}/{questionId}")

@@ -99,6 +99,12 @@ public class ReportService {
         reportRepository.save(report);
     }
 
+    public String generateScript(Long meetingId, Long corpId) {
+        OverallAnalysisRequestDTO request = new OverallAnalysisRequestDTO(corpId, meetingId);
+        String response = reportClient.generateScript(request);
+        return response;
+    }
+
     private EachAnalysisRequestDTO buildEachAnalysisRequestDTO(List<Answer> answers) {
         List<EachAnalysisRequestDTO.Response> responses = answers.stream()
                 .map(answer -> new EachAnalysisRequestDTO.Response(

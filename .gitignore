@@ -7,7 +7,7 @@ build/
 !**/src/test/**/build/
 application.properties
 /Unicorn/uploads
-/Bridge/uploads
+/src/main/resources/logback-spring.xml
 
 ### STS ###
 .apt_generated
