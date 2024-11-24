@@ -1,0 +1,24 @@
+package com.ohgiraffers.unicorn.meeting.dto;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class IndivMeetingDTO {
+    private String brandName;
+    private Long meetingId;
+    private String meetingTitle;
+    private List<String> participantGender;
+    private String participantAge;  // e.g., "20 - 30"
+    private String rewardType;
+    private String rewardPrice;
+    private String meetingDate;     // e.g., "2024-11-29"
+    private String meetingTime;     // e.g., "15:00:00 - 17:00:00"
+    private String recruitmentPeriod;  // e.g., "2024-10-31 - 2024-11-15"
+    private String extraConditions;
+    private Long corpId;
+    private int categoryId;
+    private String status;
+}
+

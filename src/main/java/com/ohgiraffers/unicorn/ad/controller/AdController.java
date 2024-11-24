@@ -1,59 +1,65 @@
 package com.ohgiraffers.unicorn.ad.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ohgiraffers.unicorn.ad.entity.Ad;
 import com.ohgiraffers.unicorn.ad.service.AdService;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
-@RequestMapping("/api/ad")
+@RequestMapping("/api/v1/ad")
 public class AdController {
 
     @Autowired
     private AdService adService;
 
-    @Autowired
-    private AmazonS3Client amazonS3Client;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
-    // 하드코딩된 corpId (로그인 미구현 상태)
-    private final Long corpId = 123L;
-
     @PostMapping
-    public ResponseEntity<Ad> createAd(
+    public ResponseEntity<?> createOrUpdateAd(
             @RequestParam("file") MultipartFile file,
             @RequestParam("type") String type,
             @RequestParam("description") String description) {
+
         try {
-            String fileName = file.getOriginalFilename();
-            String fileUrl = "https://" + bucket + ".s3.amazonaws.com/" + fileName;
+            // 현재 사용자 ID 가져오기
+            Long corpId = getCurrentUserId();
 
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(type);
-            metadata.setContentLength(file.getSize());
+            Optional<Ad> existingAd = adService.findAdByUserId(corpId);
 
-            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+            // 기존 파일이 존재할 경우 삭제
+            if (existingAd.isPresent() && existingAd.get().getFileUrl() != null) {
+                adService.deleteFileFromS3(existingAd.get().getFileUrl());
+            }
 
-            Ad ad = adService.createAd(corpId, fileUrl, type, description);
-            return ResponseEntity.ok(ad);
+            // 새 파일 업로드
+            String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
+
+            // 광고 생성 또는 업데이트
+            CompletableFuture<Ad> futureAd = adService.createOrUpdateAd(corpId, fileUrl, type, description, 1);
+
+            Ad ad = futureAd.get(); // 비동기 결과를 동기적으로 기다림
+
+            return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.ok().body(ApiUtils.error(e.getMessage()));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<Ad> getAd() {
-        Ad ad = adService.getAds(corpId, 1);
+    @GetMapping("/{adId}")
+    public ResponseEntity<Ad> getAd(@PathVariable("adId") Long adId) {
+        Ad ad = adService.findByAdIdAndIsOpened(adId);
         return ResponseEntity.ok(ad);
     }
 }

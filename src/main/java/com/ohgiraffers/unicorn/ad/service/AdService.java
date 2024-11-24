@@ -1,18 +1,22 @@
 package com.ohgiraffers.unicorn.ad.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.ohgiraffers.unicorn.ad.client.AdClient;
+import com.ohgiraffers.unicorn.ad.dto.AdRequestDTO;
 import com.ohgiraffers.unicorn.ad.entity.Ad;
 import com.ohgiraffers.unicorn.ad.repository.AdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdService {
@@ -22,13 +26,80 @@ public class AdService {
     @Autowired
     private AdRepository adRepository;
 
-    public Ad createAd(Long corpId, String fileUrl, String type, String description) throws IOException {
+    @Autowired
+    private AmazonS3Client amazonS3Client;
 
-        Ad ad = new Ad(corpId, fileUrl, type, description);
-        return adRepository.save(ad);
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+    @Autowired
+    private AdClient adClient;
+
+
+    // 광고 생성 또는 업데이트 메서드
+    @Async
+    public CompletableFuture createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
+
+        // 기존 광고가 있는지 확인하여 생성 또는 업데이트
+        Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
+
+        if (existingAd.isPresent()) {
+            Ad ad = existingAd.get();
+
+            ad.setCorpId(corpId);
+            ad.setFileUrl(fileUrl); // S3 이미지 파일 URL
+            ad.setType(type);
+            ad.setDescription(description);
+            ad.setIsOpened(ad.getIsOpened());
+
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
+
+            return CompletableFuture.completedFuture(adRepository.save(ad));
+        } else {
+            Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
+
+            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
+
+            String response = adClient.generateVideoAd(requestDTO);
+
+            ad.setAdVideoUrl(response);
+
+            return CompletableFuture.completedFuture(adRepository.save(ad));
+        }
     }
 
-    public Ad getAds(Long corpId, int isOpened) {
-        return adRepository.findByCorpIdAndIsOpened(corpId, isOpened);
+    public Optional<Ad> findAdByUserId(Long corpId) {
+        return adRepository.findByCorpId(corpId);
+    }
+
+    // S3에 파일 업로드 메서드
+    public String uploadImageToS3(MultipartFile file, String folderName) throws IOException {
+        String fileName = folderName + "/image_" + file.getOriginalFilename(); // ad 폴더 경로 포함
+        String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+
+        // S3에 파일 업로드
+        amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+        logger.info("File uploaded to S3: {}", fileUrl);
+
+        return fileUrl;
+    }
+
+    public void deleteFileFromS3(String fileUrl) {
+        String fileKey = fileUrl.replace("https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/", "");
+
+        amazonS3Client.deleteObject(bucket, fileKey);
+        logger.info("File deleted from S3: {}", fileUrl);
+    }
+
+    public Ad findByAdIdAndIsOpened(Long adId) {
+        return adRepository.findByAdIdAndIsOpened(adId, 1)
+                .orElseThrow(() -> new IllegalArgumentException("요청하신 광고를 찾을 수 없습니다."));
     }
 }
