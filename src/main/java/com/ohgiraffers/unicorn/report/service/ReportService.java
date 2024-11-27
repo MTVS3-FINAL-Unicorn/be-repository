@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.report.entity.Report;
 import com.ohgiraffers.unicorn.report.entity.AnalysisType;
+import com.ohgiraffers.unicorn.report.entity.ReportSummary;
 import com.ohgiraffers.unicorn.report.repository.ReportRepository;
 import com.ohgiraffers.unicorn.report.client.ReportClient;
+import com.ohgiraffers.unicorn.report.repository.ReportSummaryRepository;
 import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
@@ -32,6 +34,8 @@ public class ReportService {
     private QuestionRepository questionRepository;
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private ReportSummaryRepository reportSummaryRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -101,8 +105,25 @@ public class ReportService {
 
     public String generateScript(Long meetingId, Long corpId) {
         OverallAnalysisRequestDTO request = new OverallAnalysisRequestDTO(corpId, meetingId);
+
         String response = reportClient.generateScript(request);
-        return response;
+
+        String summary = extractSummaryFromResponse(response);
+
+        ReportSummary reportSummary = new ReportSummary(meetingId, corpId, summary);
+        reportSummaryRepository.save(reportSummary);
+
+        return summary;
+    }
+
+    private String extractSummaryFromResponse(String response) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(response);
+            return rootNode.get("summary").asText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
+        }
     }
 
     private EachAnalysisRequestDTO buildEachAnalysisRequestDTO(List<Answer> answers) {
