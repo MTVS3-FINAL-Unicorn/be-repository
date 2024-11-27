@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ReportSummary {
+public class MeetingSummary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class ReportSummary {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
-    public ReportSummary(Long meetingId, Long corpId, String summary) {
+    public MeetingSummary(Long meetingId, Long corpId, String summary) {
         this.meetingId = meetingId;
         this.corpId = corpId;
         this.summary = summary;

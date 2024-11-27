@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.report.entity.Report;
 import com.ohgiraffers.unicorn.report.entity.AnalysisType;
-import com.ohgiraffers.unicorn.report.entity.ReportSummary;
+import com.ohgiraffers.unicorn.report.entity.MeetingSummary;
 import com.ohgiraffers.unicorn.report.repository.ReportRepository;
 import com.ohgiraffers.unicorn.report.client.ReportClient;
-import com.ohgiraffers.unicorn.report.repository.ReportSummaryRepository;
+import com.ohgiraffers.unicorn.report.repository.MeetingSummaryRepository;
 import com.ohgiraffers.unicorn.survey.dto.EachAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
@@ -35,7 +35,7 @@ public class ReportService {
     @Autowired
     private MeetingRepository meetingRepository;
     @Autowired
-    private ReportSummaryRepository reportSummaryRepository;
+    private MeetingSummaryRepository meetingSummaryRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -110,8 +110,8 @@ public class ReportService {
 
         String summary = extractSummaryFromResponse(response);
 
-        ReportSummary reportSummary = new ReportSummary(meetingId, corpId, summary);
-        reportSummaryRepository.save(reportSummary);
+        MeetingSummary meetingSummary = new MeetingSummary(meetingId, corpId, summary);
+        meetingSummaryRepository.save(meetingSummary);
 
         return summary;
     }
