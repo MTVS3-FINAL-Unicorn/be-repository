@@ -5,6 +5,7 @@ import com.ohgiraffers.unicorn.survey.dto.OverallAnalysisRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.TextRequestDTO;
 import com.ohgiraffers.unicorn.survey.dto.VoiceRequestDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public interface ReportClient {
     @PostMapping("/analyze-all")
     String analyzeOverallResponses(@RequestBody OverallAnalysisRequestDTO request);
 
-    @PostMapping("/meeting-script")
+    @GetMapping("/meeting-script")
     String generateScript(@RequestBody OverallAnalysisRequestDTO request);
 
     @PostMapping("/analyze-topic")
