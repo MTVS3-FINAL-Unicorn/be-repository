@@ -7,14 +7,14 @@ import com.ohgiraffers.unicorn.meeting.dto.MeetingDTO;
 import com.ohgiraffers.unicorn.meeting.entity.Meeting;
 import com.ohgiraffers.unicorn.meeting.repository.MeetingRepository;
 import com.ohgiraffers.unicorn.meeting.service.MeetingService;
-import com.ohgiraffers.unicorn.utils.ApiUtils;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ohgiraffers.unicorn.utils.SecurityUtils.getCurrentUserId;
+import static com.ohgiraffers.unicorn._core.utils.SecurityUtils.getCurrentUserId;
 
 @RestController
 @RequestMapping("/api/v1/meeting")

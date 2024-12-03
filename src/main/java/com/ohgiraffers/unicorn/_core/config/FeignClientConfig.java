@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.config;
+package com.ohgiraffers.unicorn._core.config;
 
 import feign.codec.Encoder;
 import org.springframework.beans.factory.ObjectFactory;

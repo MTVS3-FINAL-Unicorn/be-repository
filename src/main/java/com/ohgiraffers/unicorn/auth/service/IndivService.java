@@ -2,7 +2,7 @@ package com.ohgiraffers.unicorn.auth.service;
 
 import com.ohgiraffers.unicorn.auth.entity.Indiv;
 import com.ohgiraffers.unicorn.error.exception.Exception401;
-import com.ohgiraffers.unicorn.jwt.JWTTokenProvider;
+import com.ohgiraffers.unicorn._core.jwt.JWTTokenProvider;
 import com.ohgiraffers.unicorn.auth.entity.Authority;
 import com.ohgiraffers.unicorn.auth.dto.UserRequestDTO;
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

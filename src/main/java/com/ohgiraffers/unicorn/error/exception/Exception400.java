@@ -1,6 +1,6 @@
 package com.ohgiraffers.unicorn.error.exception;
 
-import com.ohgiraffers.unicorn.utils.ApiUtils;
+import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

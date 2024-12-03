@@ -22,7 +22,7 @@ public interface ReportClient {
     @PostMapping("/analyze-all")
     String analyzeOverallResponses(@RequestBody OverallAnalysisRequestDTO request);
 
-    @GetMapping("meeting-script")
+    @GetMapping("/meeting-script")
     String generateScript(@RequestBody OverallAnalysisRequestDTO request);
 
     @PostMapping("/analyze-topic")

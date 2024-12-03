@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.utils;
+package com.ohgiraffers.unicorn._core.utils;
 
 import com.ohgiraffers.unicorn.error.exception.Exception403;
 import org.springframework.security.core.context.SecurityContextHolder;

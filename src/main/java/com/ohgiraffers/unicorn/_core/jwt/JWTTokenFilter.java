@@ -1,4 +1,4 @@
-package com.ohgiraffers.unicorn.jwt;
+package com.ohgiraffers.unicorn._core.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
