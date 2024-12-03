@@ -57,10 +57,16 @@ public class ReportController {
         return ResponseEntity.ok(overallReport);
     }
 
-    @PostMapping("/generate-script/{meetingId}")
-    public ResponseEntity<?> generateScript(@PathVariable("meetingId") Long meetingId) {
+    @GetMapping("/get-script/{meetingId}")
+    public ResponseEntity<?> getScript(@PathVariable("meetingId") Long meetingId) {
         String meetingScript = reportService.generateScript(meetingId, getCurrentUserId());
         return ResponseEntity.ok(meetingScript);
+    }
+
+    @PostMapping("/generate-summary/{meetingId}")
+    public ResponseEntity<?> generateSummary(@PathVariable("meetingId") Long meetingId) {
+        String meetingSummary = reportService.generateScript(meetingId, getCurrentUserId());
+        return ResponseEntity.ok(meetingSummary);
     }
 
     @PostMapping("/analyze/{meetingId}/{questionId}")
