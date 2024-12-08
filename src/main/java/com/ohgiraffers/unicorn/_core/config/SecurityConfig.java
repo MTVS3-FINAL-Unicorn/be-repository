@@ -49,7 +49,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/indiv/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**", "/api/v1/survey/**")
+                .securityMatcher("/api/v1/auth/indiv/**", "/api/v1/ad", "/api/v1/meeting", "/api/v1/space/**", "/api/v1/survey/**", "/api/v1/points/**", "/api/v1/bookmark/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
@@ -71,7 +71,7 @@ public class SecurityConfig {
     public SecurityFilterChain corpFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/corp/**", "/api/v1/ad", "/api/v1/meeting/**", "/api/v1/space/**", "/api/v1/report/**")
+                .securityMatcher("/api/v1/auth/corp/**", "/api/v1/ad", "/api/v1/meeting/**", "/api/v1/space/**", "/api/v1/report/**", "/api/v1/bookmark/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
