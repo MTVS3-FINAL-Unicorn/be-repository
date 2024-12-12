@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdService {
@@ -36,28 +34,44 @@ public class AdService {
     @Autowired
     private AdClient adClient;
 
-    @Async
-    public CompletableFuture<Ad> createAd(Long corpId, String description, String fileUrl) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Ad ad = new Ad(corpId, fileUrl, description);
-                AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
-
-                // 광고 생성 요청 (AI 서버로 요청 전송)
-                String response = adClient.generateVideoAd(requestDTO);
-                ad.setAdVideoUrl(response);
-
-                // 광고 저장
-                Ad savedAd = adRepository.save(ad);
-                logger.info("Ad created for corpId {} with adId {}", corpId, savedAd.getAdId());
-
-                return savedAd;
-            } catch (Exception e) {
-                logger.error("광고 생성 중 오류 발생: {}", e.getMessage());
-                throw new RuntimeException("광고 생성 실패", e);
-            }
-        });
+    public Ad createAdImmediately(Long corpId, String description) {
+        Ad ad = new Ad(corpId, description);
+        Ad savedAd = adRepository.save(ad);
+        logger.info("Ad created immediately with adId: {}", savedAd.getAdId());
+        return savedAd;
     }
+
+    @Async
+    public void createPreview(Long adId, Long corpId, String description, String fileUrl) {
+        try {
+            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+            String previewUrl = adClient.generatePreview(requestDTO);
+            updatePreviewUrl(adId, previewUrl);
+        } catch (Exception e) {
+            logger.error("미리보기 이미지 생성 중 오류 발생: {}", e.getMessage());
+            updatePreviewUrl(adId, "error");
+        }
+    }
+
+    @Async
+    public void createVideo(Long adId, Long corpId, String description, String fileUrl) {
+        try {
+            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+            String adVideoUrl = adClient.generateVideoAd(requestDTO);
+            updateAdVideoUrl(adId, adVideoUrl);
+        } catch (Exception e) {
+            logger.error("광고 영상 생성 중 오류 발생: {}", e.getMessage());
+            updateAdVideoUrl(adId, "error");
+        }
+    }
+
+    public void updateFileUrl(Long adId, String fileUrl) {
+        Ad ad = adRepository.findByAdId(adId)
+                .orElseThrow(() -> new IllegalArgumentException("Ad not found"));
+        ad.setFileUrl(fileUrl);
+        adRepository.save(ad);
+    }
+
 
     public void updatePreviewUrl(Long adId, String previewUrl) {
         Ad ad = adRepository.findByAdId(adId)
