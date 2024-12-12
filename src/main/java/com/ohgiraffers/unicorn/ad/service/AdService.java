@@ -36,27 +36,37 @@ public class AdService {
     @Autowired
     private AdClient adClient;
 
+    public Ad createAdImmediately(Long corpId, String description, String fileUrl) {
+        Ad ad = new Ad(corpId, fileUrl, description);
+        ad.setPreviewUrl("processing"); // 초기값
+        ad.setAdVideoUrl("processing"); // 초기값
+        Ad savedAd = adRepository.save(ad);
+        logger.info("Ad created immediately with adId: {}", savedAd.getAdId());
+        return savedAd;
+    }
+
     @Async
-    public CompletableFuture<Ad> createAd(Long corpId, String description, String fileUrl) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Ad ad = new Ad(corpId, fileUrl, description);
-                AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+    public void createPreview(Long adId, Long corpId, String description, String fileUrl) {
+        try {
+            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+            String previewUrl = adClient.generatePreview(requestDTO);
+            updatePreviewUrl(adId, previewUrl);
+        } catch (Exception e) {
+            logger.error("미리보기 이미지 생성 중 오류 발생: {}", e.getMessage());
+            updatePreviewUrl(adId, "error");
+        }
+    }
 
-                // 광고 생성 요청 (AI 서버로 요청 전송)
-                String response = adClient.generateVideoAd(requestDTO);
-                ad.setAdVideoUrl(response);
-
-                // 광고 저장
-                Ad savedAd = adRepository.save(ad);
-                logger.info("Ad created for corpId {} with adId {}", corpId, savedAd.getAdId());
-
-                return savedAd;
-            } catch (Exception e) {
-                logger.error("광고 생성 중 오류 발생: {}", e.getMessage());
-                throw new RuntimeException("광고 생성 실패", e);
-            }
-        });
+    @Async
+    public void createVideo(Long adId, Long corpId, String description, String fileUrl) {
+        try {
+            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+            String adVideoUrl = adClient.generateVideoAd(requestDTO);
+            updateAdVideoUrl(adId, adVideoUrl);
+        } catch (Exception e) {
+            logger.error("광고 영상 생성 중 오류 발생: {}", e.getMessage());
+            updateAdVideoUrl(adId, "error");
+        }
     }
 
     public void updatePreviewUrl(Long adId, String previewUrl) {
