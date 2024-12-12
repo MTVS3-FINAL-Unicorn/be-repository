@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdService {
@@ -36,10 +34,8 @@ public class AdService {
     @Autowired
     private AdClient adClient;
 
-    public Ad createAdImmediately(Long corpId, String description, String fileUrl) {
-        Ad ad = new Ad(corpId, fileUrl, description);
-        ad.setPreviewUrl("processing"); // 초기값
-        ad.setAdVideoUrl("processing"); // 초기값
+    public Ad createAdImmediately(Long corpId, String description) {
+        Ad ad = new Ad(corpId, description);
         Ad savedAd = adRepository.save(ad);
         logger.info("Ad created immediately with adId: {}", savedAd.getAdId());
         return savedAd;
@@ -68,6 +64,14 @@ public class AdService {
             updateAdVideoUrl(adId, "error");
         }
     }
+
+    public void updateFileUrl(Long adId, String fileUrl) {
+        Ad ad = adRepository.findByAdId(adId)
+                .orElseThrow(() -> new IllegalArgumentException("Ad not found"));
+        ad.setFileUrl(fileUrl);
+        adRepository.save(ad);
+    }
+
 
     public void updatePreviewUrl(Long adId, String previewUrl) {
         Ad ad = adRepository.findByAdId(adId)

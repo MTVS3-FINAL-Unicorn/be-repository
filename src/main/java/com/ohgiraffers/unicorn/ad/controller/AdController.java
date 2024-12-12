@@ -29,12 +29,11 @@ public class AdController {
             @RequestParam("description") String description) {
         try {
             Long corpId = getCurrentUserId();
-            System.out.println("corpId = " + corpId);
 
-            String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
+            Ad ad = adService.createAdImmediately(corpId, description);
 
-            Ad ad = adService.createAdImmediately(corpId, description, fileUrl);
-            System.out.println("Ad created and saved immediately: " + ad);
+            String fileUrl = adService.uploadImageToS3(file, "ad/" + ad.getAdId());
+            adService.updateFileUrl(ad.getAdId(), fileUrl);
 
             adService.createPreview(ad.getAdId(), corpId, description, fileUrl);
             adService.createVideo(ad.getAdId(), corpId, description, fileUrl);
@@ -46,6 +45,7 @@ public class AdController {
             throw new RuntimeException("광고 생성 중 오류 발생", e);
         }
     }
+
 
     @GetMapping("/{adId}")
     public ResponseEntity<Ad> getAd(@PathVariable("adId") Long adId) {
