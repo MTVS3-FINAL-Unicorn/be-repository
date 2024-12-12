@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -52,4 +53,12 @@ public class AdController {
         Ad ad = adService.findByAdId(adId);
         return ResponseEntity.ok(ad);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Ad>> getAllAds() {
+        Long corpId = getCurrentUserId();
+        List<Ad> ads = adService.findAllAdsByCorpId(corpId);
+        return ResponseEntity.ok(ads);
+    }
+
 }
