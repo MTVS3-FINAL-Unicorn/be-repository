@@ -2,7 +2,6 @@ package com.ohgiraffers.unicorn.bookmark.controller;
 
 import com.ohgiraffers.unicorn._core.utils.ApiUtils;
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
-import com.ohgiraffers.unicorn.auth.entity.Corp;
 import com.ohgiraffers.unicorn.bookmark.service.BookmarkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +18,21 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addBookmark(@RequestBody Long corpId) {
+    @PostMapping("/toggle")
+    public ResponseEntity<?> toggleBookmark(@RequestBody Long corpId) {
         try {
-            bookmarkService.addBookmark(corpId, getCurrentUserId());
-            return ResponseEntity.ok().body(ApiUtils.success(null));
+            boolean isAdded = bookmarkService.toggleBookmark(corpId, getCurrentUserId());
+
+            if (isAdded) {
+                return ResponseEntity.ok().body(ApiUtils.success("즐겨찾기에 추가되었습니다."));
+            } else {
+                return ResponseEntity.ok().body(ApiUtils.success("즐겨찾기가 해제되었습니다."));
+            }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiUtils.error(e.getMessage()));
         }
     }
+
 
     @GetMapping("/my-bookmarks")
     public ResponseEntity<?> getMyBookmarks() {
@@ -35,5 +40,13 @@ public class BookmarkController {
         List<UserResponseDTO.CorpProfileDTO> bookmarks = bookmarkService.getMyBookmarks(indivId);
         return ResponseEntity.ok(ApiUtils.success(bookmarks));
     }
+
+    @GetMapping("/my-subscribers")
+    public ResponseEntity<?> getMySubscribers() {
+        Long corpId = getCurrentUserId();
+        List<UserResponseDTO.IndivProfileDTO> subscribers = bookmarkService.getMySubscribers(corpId);
+        return ResponseEntity.ok(ApiUtils.success(subscribers));
+    }
+
 }
 

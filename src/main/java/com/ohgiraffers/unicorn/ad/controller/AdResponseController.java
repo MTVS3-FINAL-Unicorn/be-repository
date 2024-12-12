@@ -41,7 +41,7 @@ public class AdResponseController {
 
     public String uploadFileToS3(Long corpId, MultipartFile advertiseVideo) throws IOException {
         String folderName = "ad/" + corpId;
-        String fileName = folderName + "/video_" + advertiseVideo.getOriginalFilename();
+        String fileName = folderName + "/video/" + advertiseVideo.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();
