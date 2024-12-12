@@ -31,75 +31,64 @@ public class AdService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
     @Autowired
     private AdClient adClient;
 
-
-    // 광고 생성 또는 업데이트 메서드
     @Async
-    public CompletableFuture createOrUpdateAd(Long corpId, String description, String type, String fileUrl, int isOpened) {
+    public CompletableFuture<Ad> createAd(Long corpId, String description, String fileUrl) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Ad ad = new Ad(corpId, fileUrl, description);
+                AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
 
-        // 기존 광고가 있는지 확인하여 생성 또는 업데이트
-        Optional<Ad> existingAd = adRepository.findByCorpId(corpId);
+                // 광고 생성 요청 (AI 서버로 요청 전송)
+                String response = adClient.generateVideoAd(requestDTO);
+                ad.setAdVideoUrl(response);
 
-        if (existingAd.isPresent()) {
-            Ad ad = existingAd.get();
+                // 광고 저장
+                Ad savedAd = adRepository.save(ad);
+                logger.info("Ad created for corpId {} with adId {}", corpId, savedAd.getAdId());
 
-            ad.setCorpId(corpId);
-            ad.setFileUrl(fileUrl); // S3 이미지 파일 URL
-            ad.setType(type);
-            ad.setDescription(description);
-            ad.setIsOpened(ad.getIsOpened());
-
-            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-
-            String response = adClient.generateVideoAd(requestDTO);
-
-            ad.setAdVideoUrl(response);
-
-            return CompletableFuture.completedFuture(adRepository.save(ad));
-        } else {
-            Ad ad = new Ad(corpId, fileUrl, type, description, isOpened);
-
-            AdRequestDTO requestDTO= new AdRequestDTO(description, corpId, type, fileUrl);
-
-            String response = adClient.generateVideoAd(requestDTO);
-
-            ad.setAdVideoUrl(response);
-
-            return CompletableFuture.completedFuture(adRepository.save(ad));
-        }
+                return savedAd;
+            } catch (Exception e) {
+                logger.error("광고 생성 중 오류 발생: {}", e.getMessage());
+                throw new RuntimeException("광고 생성 실패", e);
+            }
+        });
     }
 
-    public Optional<Ad> findAdByUserId(Long corpId) {
-        return adRepository.findByCorpId(corpId);
+    public void updatePreviewUrl(Long adId, String previewUrl) {
+        Ad ad = adRepository.findByAdId(adId)
+                .orElseThrow(() -> new IllegalArgumentException("Ad not found"));
+        ad.setPreviewUrl(previewUrl);
+        adRepository.save(ad);
+    }
+
+    public void updateAdVideoUrl(Long adId, String adVideoUrl) {
+        Ad ad = adRepository.findByAdId(adId)
+                .orElseThrow(() -> new IllegalArgumentException("Ad not found"));
+        ad.setAdVideoUrl(adVideoUrl);
+        adRepository.save(ad);
     }
 
     // S3에 파일 업로드 메서드
     public String uploadImageToS3(MultipartFile file, String folderName) throws IOException {
-        String fileName = folderName + "/image_" + file.getOriginalFilename(); // ad 폴더 경로 포함
+        String fileName = folderName + "/originalImage_" + file.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
 
-        // S3에 파일 업로드
         amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
         logger.info("File uploaded to S3: {}", fileUrl);
 
         return fileUrl;
     }
 
-    public void deleteFileFromS3(String fileUrl) {
-        String fileKey = fileUrl.replace("https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/", "");
-
-        amazonS3Client.deleteObject(bucket, fileKey);
-        logger.info("File deleted from S3: {}", fileUrl);
-    }
-
-    public Ad findByAdIdAndIsOpened(Long adId) {
-        return adRepository.findByAdIdAndIsOpened(adId, 1)
+    public Ad findByAdId(Long adId) {
+        return adRepository.findByAdId(adId)
                 .orElseThrow(() -> new IllegalArgumentException("요청하신 광고를 찾을 수 없습니다."));
     }
 }
