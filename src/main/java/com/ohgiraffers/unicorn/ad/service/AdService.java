@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -91,4 +92,10 @@ public class AdService {
         return adRepository.findByAdId(adId)
                 .orElseThrow(() -> new IllegalArgumentException("요청하신 광고를 찾을 수 없습니다."));
     }
+
+    // 특정 기업의 모든 광고 조회
+    public List<Ad> findAllAdsByCorpId(Long corpId) {
+        return adRepository.findAllByCorpId(corpId);
+    }
+
 }

@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface AdRepository extends JpaRepository<Ad, Long> {
     Optional<Ad> findByAdId(Long adId);
-    List<Ad> findByCorpId(Long corpId); // 기업의 모든 광고 조회
+    List<Ad> findAllByCorpId(Long corpId);
 }
