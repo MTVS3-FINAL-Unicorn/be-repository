@@ -6,11 +6,11 @@ import lombok.Data;
 public class AdRequestDTO {
     private String image;
     private String prompt;
-    private Long corpId;
+    private Long adId;
 
-    public AdRequestDTO(String description, Long corpId, String fileUrl) {
+    public AdRequestDTO(String description, Long adId, String fileUrl) {
         this.prompt = description;
-        this.corpId = corpId;
+        this.adId = adId;
         this.image = fileUrl;
     }
 }

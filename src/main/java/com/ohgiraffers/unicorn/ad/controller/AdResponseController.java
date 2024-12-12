@@ -55,8 +55,8 @@ public class AdResponseController {
     }
 
 
-    private String uploadFileToS3(Long corpId, MultipartFile file, String type) throws IOException {
-        String folderName = "ad/" + corpId + "/";
+    private String uploadFileToS3(Long adId, MultipartFile file, String type) throws IOException {
+        String folderName = "ad/" + adId + "/";
         String fileName = folderName + "/" + type + "_" + file.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
 
