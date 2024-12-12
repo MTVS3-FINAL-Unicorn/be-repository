@@ -2,23 +2,28 @@ package com.ohgiraffers.unicorn.ad.entity;
 
 import com.ohgiraffers.unicorn.BaseTimeEntity;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
 public class Ad extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adId;
 
-    @Column
+    @Column(nullable = false)
     private Long corpId;
 
     @Column
     private String fileUrl;
 
     @Column
-    private String type;
+    private String previewUrl;
 
     @Column
     private String description;
@@ -26,17 +31,19 @@ public class Ad extends BaseTimeEntity {
     @Column
     private String adVideoUrl;
 
-    @ColumnDefault("1")
-    private Integer isOpened;
-
     public Ad() {}
 
-    public Ad(Long corpId, String fileUrl, String type, String description, Integer isOpened) {
+    public Ad(Long corpId, String fileUrl, String previewUrl, String description) {
         this.corpId = corpId;
         this.fileUrl = fileUrl;
-        this.type = type;
+        this.previewUrl = previewUrl;
         this.description = description;
-        this.isOpened = isOpened;
+    }
+
+    public Ad(Long corpId, String fileUrl, String description) {
+        this.corpId = corpId;
+        this.fileUrl = fileUrl;
+        this.description = description;
     }
 
     public Long getAdId() {
@@ -59,16 +66,16 @@ public class Ad extends BaseTimeEntity {
         return fileUrl;
     }
 
-    public void setFileUrl(String mediaUrl) {
-        this.fileUrl = mediaUrl;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
-    public String getType() {
-        return type;
+    public String getPreviewUrl() {
+        return previewUrl;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
     }
 
     public String getDescription() {
@@ -79,28 +86,11 @@ public class Ad extends BaseTimeEntity {
         this.description = description;
     }
 
-    public Integer getIsOpened() {
-        return isOpened;
+    public String getAdVideoUrl() {
+        return adVideoUrl;
     }
 
-    public void setIsOpened(Integer isOpened) {
-        this.isOpened = isOpened;
-    }
-
-    public String getAdVideoUrl() { return adVideoUrl; }
-
-    public void setAdVideoUrl(String adVideoUrl) { this.adVideoUrl = adVideoUrl; }
-
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "adId=" + adId +
-                ", corpId='" + corpId + '\'' +
-                ", fileUrl='" + fileUrl + '\'' +
-                ", type='" + type + '\'' +
-                ", description='" + description + '\'' +
-                ", adVideoUrl='" + adVideoUrl + '\'' +
-                ", isOpened=" + isOpened +
-                '}';
+    public void setAdVideoUrl(String adVideoUrl) {
+        this.adVideoUrl = adVideoUrl;
     }
 }
