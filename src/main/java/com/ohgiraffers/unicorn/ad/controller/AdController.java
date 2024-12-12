@@ -35,8 +35,7 @@ public class AdController {
             String fileUrl = adService.uploadImageToS3(file, "ad/" + ad.getAdId());
             adService.updateFileUrl(ad.getAdId(), fileUrl);
 
-            adService.createPreview(ad.getAdId(), corpId, description, fileUrl);
-            adService.createVideo(ad.getAdId(), corpId, description, fileUrl);
+            adService.updatePreviewAndVideo(ad.getAdId(), description, fileUrl);
 
             return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {

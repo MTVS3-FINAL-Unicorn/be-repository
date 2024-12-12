@@ -36,27 +36,17 @@ public class AdService {
 
     public Ad createAdImmediately(Long corpId, String description) {
         Ad ad = new Ad(corpId, description);
+        ad.setPreviewUrl("default");
+        ad.setAdVideoUrl("default");
         Ad savedAd = adRepository.save(ad);
         logger.info("Ad created immediately with adId: {}", savedAd.getAdId());
         return savedAd;
     }
 
     @Async
-    public void createPreview(Long adId, Long corpId, String description, String fileUrl) {
+    public void updatePreviewAndVideo(Long adId, String description, String fileUrl) {
         try {
-            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
-            String previewUrl = adClient.generatePreview(requestDTO);
-            updatePreviewUrl(adId, previewUrl);
-        } catch (Exception e) {
-            logger.error("미리보기 이미지 생성 중 오류 발생: {}", e.getMessage());
-            updatePreviewUrl(adId, "error");
-        }
-    }
-
-    @Async
-    public void createVideo(Long adId, Long corpId, String description, String fileUrl) {
-        try {
-            AdRequestDTO requestDTO = new AdRequestDTO(description, corpId, fileUrl);
+            AdRequestDTO requestDTO = new AdRequestDTO(description, adId, fileUrl);
             String adVideoUrl = adClient.generateVideoAd(requestDTO);
             updateAdVideoUrl(adId, adVideoUrl);
         } catch (Exception e) {
@@ -72,7 +62,6 @@ public class AdService {
         adRepository.save(ad);
     }
 
-
     public void updatePreviewUrl(Long adId, String previewUrl) {
         Ad ad = adRepository.findByAdId(adId)
                 .orElseThrow(() -> new IllegalArgumentException("Ad not found"));
@@ -87,7 +76,6 @@ public class AdService {
         adRepository.save(ad);
     }
 
-    // S3에 파일 업로드 메서드
     public String uploadImageToS3(MultipartFile file, String folderName) throws IOException {
         String fileName = folderName + "/originalImage_" + file.getOriginalFilename();
         String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
