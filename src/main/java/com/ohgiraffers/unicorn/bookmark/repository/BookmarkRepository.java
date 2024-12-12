@@ -8,9 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+    Optional<Bookmark> findByCorpIdAndIndivId(Long corpId, Long indivId);
 
     @Query("SELECT b.corpId FROM Bookmark b WHERE b.indivId = :indivId")
     List<Long> findCorpIdsByIndivId(@Param("indivId") Long indivId);
