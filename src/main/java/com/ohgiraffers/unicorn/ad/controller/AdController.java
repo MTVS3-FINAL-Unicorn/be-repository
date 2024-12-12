@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -22,28 +23,18 @@ public class AdController {
     @Autowired
     private AdService adService;
 
-    @PostMapping
-    public ResponseEntity<?> createOrUpdateAd(
+    @PostMapping("/create")
+    public ResponseEntity<?> createAd(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("type") String type,
             @RequestParam("description") String description) {
-
         try {
             // 현재 사용자 ID 가져오기
             Long corpId = getCurrentUserId();
-
-            Optional<Ad> existingAd = adService.findAdByUserId(corpId);
-
-            // 기존 파일이 존재할 경우 삭제
-            if (existingAd.isPresent() && existingAd.get().getFileUrl() != null) {
-                adService.deleteFileFromS3(existingAd.get().getFileUrl());
-            }
-
-            // 새 파일 업로드
+            System.out.println("corpId = " + corpId);
             String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
 
             // 광고 생성 또는 업데이트
-            CompletableFuture<Ad> futureAd = adService.createOrUpdateAd(corpId, fileUrl, type, description, 1);
+            CompletableFuture<Ad> futureAd = adService.createAd(corpId, description, fileUrl);
 
             Ad ad = futureAd.get(); // 비동기 결과를 동기적으로 기다림
 
@@ -59,7 +50,15 @@ public class AdController {
 
     @GetMapping("/{adId}")
     public ResponseEntity<Ad> getAd(@PathVariable("adId") Long adId) {
-        Ad ad = adService.findByAdIdAndIsOpened(adId);
+        Ad ad = adService.findByAdId(adId);
         return ResponseEntity.ok(ad);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Ad>> getAllAds() {
+        Long corpId = getCurrentUserId();
+        List<Ad> ads = adService.findAllAdsByCorpId(corpId);
+        return ResponseEntity.ok(ads);
+    }
+
 }
