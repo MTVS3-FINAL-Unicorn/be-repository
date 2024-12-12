@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -22,13 +23,15 @@ public class Ad extends BaseTimeEntity {
     @Column
     private String fileUrl;
 
-    @Column
+    @Column(nullable = false)
+    @ColumnDefault("'default'")
     private String previewUrl;
 
     @Column
     private String description;
 
-    @Column
+    @Column(nullable = false)
+    @ColumnDefault("'default'")
     private String adVideoUrl;
 
     public Ad() {}
