@@ -18,15 +18,21 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addBookmark(@RequestBody Long corpId) {
+    @PostMapping("/toggle")
+    public ResponseEntity<?> toggleBookmark(@RequestBody Long corpId) {
         try {
-            bookmarkService.addBookmark(corpId, getCurrentUserId());
-            return ResponseEntity.ok().body(ApiUtils.success(null));
+            boolean isAdded = bookmarkService.toggleBookmark(corpId, getCurrentUserId());
+
+            if (isAdded) {
+                return ResponseEntity.ok().body(ApiUtils.success("즐겨찾기에 추가되었습니다."));
+            } else {
+                return ResponseEntity.ok().body(ApiUtils.success("즐겨찾기가 해제되었습니다."));
+            }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(ApiUtils.error(e.getMessage()));
         }
     }
+
 
     @GetMapping("/my-bookmarks")
     public ResponseEntity<?> getMyBookmarks() {
