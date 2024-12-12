@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Setter
 @ToString
+@DynamicInsert // INSERT 시 null 값을 무시하고 기본값을 DB에 설정
 public class Ad extends BaseTimeEntity {
 
     @Id
@@ -23,15 +24,13 @@ public class Ad extends BaseTimeEntity {
     @Column
     private String fileUrl;
 
-    @Column(nullable = false)
-    @ColumnDefault("'default'")
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'default'")
     private String previewUrl;
 
     @Column
     private String description;
 
-    @Column(nullable = false)
-    @ColumnDefault("'default'")
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'default'")
     private String adVideoUrl;
 
     public Ad() {}
