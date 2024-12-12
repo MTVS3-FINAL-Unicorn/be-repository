@@ -28,23 +28,22 @@ public class AdController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description) {
         try {
-            // 현재 사용자 ID 가져오기
             Long corpId = getCurrentUserId();
             System.out.println("corpId = " + corpId);
+
             String fileUrl = adService.uploadImageToS3(file, "ad/" + corpId);
 
-            // 광고 생성 또는 업데이트
-            CompletableFuture<Ad> futureAd = adService.createAd(corpId, description, fileUrl);
+            Ad ad = adService.createAdImmediately(corpId, description, fileUrl);
+            System.out.println("Ad created and saved immediately: " + ad);
 
-            Ad ad = futureAd.get(); // 비동기 결과를 동기적으로 기다림
+            adService.createPreview(ad.getAdId(), corpId, description, fileUrl);
+            adService.createVideo(ad.getAdId(), corpId, description, fileUrl);
 
             return ResponseEntity.ok().body(ApiUtils.success(ad));
         } catch (IOException e) {
             return ResponseEntity.ok().body(ApiUtils.error(e.getMessage()));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("광고 생성 중 오류 발생", e);
         }
     }
 
