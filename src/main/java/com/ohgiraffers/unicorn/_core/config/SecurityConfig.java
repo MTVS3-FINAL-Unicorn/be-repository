@@ -71,7 +71,7 @@ public class SecurityConfig {
     public SecurityFilterChain corpFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/auth/corp/**", "/api/v1/ad", "/api/v1/meeting/**", "/api/v1/space/**", "/api/v1/report/**", "/api/v1/bookmark/**")
+                .securityMatcher("/api/v1/auth/corp/**", "/api/v1/ad/**", "/api/v1/meeting/**", "/api/v1/space/**", "/api/v1/report/**", "/api/v1/bookmark/**")
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
