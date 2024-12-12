@@ -1,16 +1,23 @@
 package com.ohgiraffers.unicorn.bookmark.service;
 
 import com.ohgiraffers.unicorn.auth.dto.UserResponseDTO;
-import com.ohgiraffers.unicorn.auth.entity.Corp;
+import com.ohgiraffers.unicorn.auth.entity.Indiv;
 import com.ohgiraffers.unicorn.auth.repository.CorpRepository;
+import com.ohgiraffers.unicorn.auth.repository.IndivRepository;
 import com.ohgiraffers.unicorn.bookmark.entity.Bookmark;
 import com.ohgiraffers.unicorn.bookmark.repository.BookmarkRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +25,7 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final CorpRepository corpRepository;
+    private final IndivRepository indivRepository;
 
     @Transactional
     public void addBookmark(Long corpId, Long currentUserId) {
@@ -27,18 +35,51 @@ public class BookmarkService {
 
     @Transactional(readOnly = true)
     public List<UserResponseDTO.CorpProfileDTO> getMyBookmarks(Long indivId) {
-        // Bookmark 테이블에서 indivId에 해당하는 corpId 목록을 가져옴
         List<Long> corpIds = bookmarkRepository.findCorpIdsByIndivId(indivId);
 
-        // corpIds가 비어있으면 빈 리스트 반환
         if (corpIds.isEmpty()) {
             return new ArrayList<>();
         }
 
-        // CorpRepository에서 해당 브랜드 정보를 DTO로 변환하여 가져옴
         return corpRepository.findCorpProfilesByIdIn(corpIds);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO.IndivProfileDTO> getMySubscribers(Long corpId) {
+        List<Long> indivIds = bookmarkRepository.findIndivIdByCorpId(corpId);
 
+        if (indivIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return indivIds.stream()
+                .map(this::getIndivProfileById)
+                .collect(Collectors.toList());
+    }
+
+    private UserResponseDTO.IndivProfileDTO getIndivProfileById(Long indivId) {
+        Indiv indiv = indivRepository.findById(indivId)
+                .orElseThrow(() -> new IllegalArgumentException("Indiv not found for id: " + indivId));
+        return convertToIndivProfileDTO(indiv);
+    }
+
+    private UserResponseDTO.IndivProfileDTO convertToIndivProfileDTO(Indiv indiv) {
+        // 나이 계산 (만 나이)
+        int age = calculateAge(indiv.getBirthDate());
+
+        return new UserResponseDTO.IndivProfileDTO(
+                indiv.getId(),
+                indiv.getName(),
+                indiv.getNickname(),
+                age,
+                indiv.getGender(),
+                indiv.getContact(),
+                indiv.getCategoryId()
+        );
+    }
+
+    private int calculateAge(LocalDate birthDate) {
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
 
 }
