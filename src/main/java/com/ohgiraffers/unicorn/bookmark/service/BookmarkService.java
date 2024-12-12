@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -28,10 +29,20 @@ public class BookmarkService {
     private final IndivRepository indivRepository;
 
     @Transactional
-    public void addBookmark(Long corpId, Long currentUserId) {
-        Bookmark bookmark = new Bookmark(corpId, currentUserId);
-        bookmarkRepository.save(bookmark);
+    public boolean toggleBookmark(Long corpId, Long currentUserId) {
+        Optional<Bookmark> existingBookmark = bookmarkRepository.findByCorpIdAndIndivId(corpId, currentUserId);
+
+        if (existingBookmark.isPresent()) {
+            bookmarkRepository.delete(existingBookmark.get());
+            return false; // 즐겨찾기 해제
+        } else {
+            Bookmark bookmark = new Bookmark(corpId, currentUserId);
+            bookmarkRepository.save(bookmark);
+            return true; // 즐겨찾기 추가
+        }
     }
+
+
 
     @Transactional(readOnly = true)
     public List<UserResponseDTO.CorpProfileDTO> getMyBookmarks(Long indivId) {
