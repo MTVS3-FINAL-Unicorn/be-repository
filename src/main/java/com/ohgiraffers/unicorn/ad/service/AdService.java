@@ -51,7 +51,7 @@ public class AdService {
             updateAdVideoUrl(adId, adVideoUrl);
         } catch (Exception e) {
             logger.error("광고 영상 생성 중 오류 발생: {}", e.getMessage());
-            updateAdVideoUrl(adId, "error");
+            updateAdVideoUrl(adId, "default");
         }
     }
 
