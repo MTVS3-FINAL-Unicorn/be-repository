@@ -98,16 +98,6 @@ public class AdService {
                 + "?alt=media";
     }
 
-    public byte[] downloadFileFromFirebase(String folderName, String fileName) throws IOException {
-        Blob blob = storage.get("unicorn-4b430.firebasestorage.app", folderName + "/" + fileName);
-        return blob.getContent();
-    }
-
-    public void deleteFileFromFirebase(String folderName, String fileName) {
-        storage.delete("unicorn-4b430.firebasestorage.app", folderName + "/" + fileName);
-        logger.info("File deleted from Firebase: {}/{}", folderName, fileName);
-    }
-
 //    public String uploadImageToS3(MultipartFile file, String folderName) throws IOException {
 //        String fileName = folderName + "/originalImage_" + file.getOriginalFilename();
 //        String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
