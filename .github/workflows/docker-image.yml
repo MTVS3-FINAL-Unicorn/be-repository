@@ -1,4 +1,4 @@
-name: Auto delploy Docker
+name: Auto deploy Docker
 
 on:
   push:

@@ -32,7 +32,7 @@ public class AdController {
 
             Ad ad = adService.createAdImmediately(corpId, description);
 
-            String fileUrl = adService.uploadImageToS3(file, "ad/" + ad.getAdId());
+            String fileUrl = adService.uploadFileToFirebase(file, "ad/" + ad.getAdId());
             adService.updateFileUrl(ad.getAdId(), fileUrl);
 
             adService.updatePreviewAndVideo(ad.getAdId(), description, fileUrl);
