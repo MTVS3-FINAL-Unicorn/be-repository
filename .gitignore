@@ -8,6 +8,7 @@ build/
 application.properties
 /Unicorn/uploads
 /src/main/resources/logback-spring.xml
+/src/main/resources/unicorn-4b430-firebase-adminsdk-eyv3n-496508bd16.json
 
 ### STS ###
 .apt_generated
