@@ -60,7 +60,7 @@ public class AdResponseController {
     }
 
     private String uploadFileToFirebase(Long adId, MultipartFile file, String type) throws IOException {
-        String folderName = "ad/" + adId + "/";
+        String folderName = "ad/" + adId;
         String fileName = folderName + "/" + type + "_" + file.getOriginalFilename();
 
         // 업로드할 파일의 메타데이터 정의
