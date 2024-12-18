@@ -55,7 +55,7 @@ public class QuestionService {
         List<String> options = new ArrayList<>();
         for (int i = 0; i < images.size(); i++) {
             String option = "Option " + (i + 1);
-            String imageUrl = uploadFileToFirebase(images.get(i), "meeting" + meetingId + "question-options");
+            String imageUrl = uploadFileToFirebase(images.get(i), "meeting/" + meetingId + "/question-options");
             options.add(option + ": " + imageUrl);
         }
         return options;
