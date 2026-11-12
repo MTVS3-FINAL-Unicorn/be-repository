@@ -9,6 +9,7 @@ application.properties
 /Unicorn/uploads
 /src/main/resources/logback-spring.xml
 /src/main/resources/serviceAccountKey.json
+*_code_summary.md
 
 ### STS ###
 .apt_generated
