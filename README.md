@@ -37,6 +37,7 @@ API는 전부 `/api/v1/**` 하위에 있으며, 인증이 필요한 요청은 `A
 
 ```
 DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD   # MySQL
+MONGODB_URI                                           # MongoDB (브랜드 스페이스)
 ACCESS_KEY, SECRET_KEY                                # AWS S3
 JWT_SECRET                                            # JWT 서명 키
 ```

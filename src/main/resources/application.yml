@@ -11,7 +11,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://user:1234@223.130.152.102:27017/brand_space_db
+      uri: ${MONGODB_URI}
 
   jpa:
     show-sql: true
